@@ -1,27 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_nm.h                                            :+:      :+:    :+:   */
+/*   ft_strnew.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/19 14:46:25 by llacaze          ###   ########.fr       */
+/*   Created: 2017/09/19 22:54:31 by Lulu              #+#    #+#             */
+/*   Updated: 2017/12/12 14:07:53 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <stdlib.h>
-#include "../libft/includes/libft.h"
+#include <stdio.h>
+#include "../includes/libft.h"
 
-typedef struct		s_info
+char	*ft_strnew(size_t size)
 {
-	size_t			address;
-	char			symbol;
-	struct s_info	*next;
-}					t_info;
+	char	*str;
+	size_t	i;
+
+	i = 0;
+	if (!(str = (char *)malloc(sizeof(char) * (size + 1))))
+		return (NULL);
+	while (i < size)
+	{
+		str[i] = '\0';
+		i++;
+	}
+	str[i] = '\0';
+	return (str);
+}

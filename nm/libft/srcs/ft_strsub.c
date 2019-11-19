@@ -1,27 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_nm.h                                            :+:      :+:    :+:   */
+/*   ft_strsub.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/19 14:46:25 by llacaze          ###   ########.fr       */
+/*   Created: 2017/10/06 00:30:45 by llacaze           #+#    #+#             */
+/*   Updated: 2017/12/12 14:08:10 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include <string.h>
 #include <stdlib.h>
-#include "../libft/includes/libft.h"
+#include <stdio.h>
+#include "../includes/libft.h"
 
-typedef struct		s_info
+char	*ft_strsub(char const *s, unsigned int start, size_t len)
 {
-	size_t			address;
-	char			symbol;
-	struct s_info	*next;
-}					t_info;
+	char	*s2;
+	size_t	i;
+
+	i = 0;
+	if (s)
+	{
+		if (!(s2 = (char *)malloc(sizeof(char) * (len + 1))))
+			return (NULL);
+		while (i < len)
+		{
+			s2[i] = s[start];
+			i++;
+			start++;
+		}
+		s2[i] = '\0';
+		return (s2);
+	}
+	return (NULL);
+}

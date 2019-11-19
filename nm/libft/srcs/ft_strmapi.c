@@ -1,27 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_nm.h                                            :+:      :+:    :+:   */
+/*   ft_strmapi.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/19 14:46:25 by llacaze          ###   ########.fr       */
+/*   Created: 2017/10/09 20:23:37 by llacaze           #+#    #+#             */
+/*   Updated: 2017/12/12 14:07:33 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include "../includes/libft.h"
 #include <stdlib.h>
-#include "../libft/includes/libft.h"
+#include <stdio.h>
 
-typedef struct		s_info
+char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 {
-	size_t			address;
-	char			symbol;
-	struct s_info	*next;
-}					t_info;
+	char	*s2;
+	int		i;
+
+	i = 0;
+	if (s && f)
+	{
+		if (!(s2 = (char *)malloc(sizeof(char) * (ft_strlen((char *)s) + 1))))
+			return (NULL);
+		while (s[i])
+		{
+			s2[i] = f(i, s[i]);
+			i++;
+		}
+		s2[i] = '\0';
+		return (s2);
+	}
+	return (NULL);
+}

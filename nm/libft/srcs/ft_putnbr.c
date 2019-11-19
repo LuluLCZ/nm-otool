@@ -1,27 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_nm.h                                            :+:      :+:    :+:   */
+/*   ft_putnbr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/19 14:46:25 by llacaze          ###   ########.fr       */
+/*   Created: 2017/09/19 16:07:51 by llacaze           #+#    #+#             */
+/*   Updated: 2017/12/12 14:06:13 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include <unistd.h>
 #include <stdlib.h>
-#include "../libft/includes/libft.h"
+#include "../includes/libft.h"
 
-typedef struct		s_info
+void	ft_putnbr(int nb)
 {
-	size_t			address;
-	char			symbol;
-	struct s_info	*next;
-}					t_info;
+	if (nb == -2147483648)
+		ft_putstr("-2147483648");
+	else
+	{
+		if (nb < 0)
+		{
+			nb = -nb;
+			ft_putchar('-');
+		}
+		if (nb > 9)
+		{
+			ft_putnbr(nb / 10);
+		}
+		ft_putchar((nb % 10) + '0');
+	}
+}

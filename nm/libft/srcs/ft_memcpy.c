@@ -1,27 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_nm.h                                            :+:      :+:    :+:   */
+/*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/19 14:46:25 by llacaze          ###   ########.fr       */
+/*   Created: 2017/09/14 11:20:41 by Lulu              #+#    #+#             */
+/*   Updated: 2019/10/08 17:20:27 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <string.h>
 #include <stdio.h>
-#include <sys/mman.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <stdlib.h>
-#include "../libft/includes/libft.h"
+#include "../includes/libft.h"
 
-typedef struct		s_info
+void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
-	size_t			address;
-	char			symbol;
-	struct s_info	*next;
-}					t_info;
+	size_t			i;
+	size_t			j;
+	unsigned char	*dst2;
+	const char		*src2;
+
+	dst2 = dst;
+	src2 = src;
+	j = 0;
+	i = 0;
+	while (i < n)
+		dst2[i++] = src2[j++];
+	return (dst);
+}

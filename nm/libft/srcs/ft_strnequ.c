@@ -1,27 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_nm.h                                            :+:      :+:    :+:   */
+/*   ft_strnequ.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/19 14:46:25 by llacaze          ###   ########.fr       */
+/*   Created: 2017/09/19 15:54:32 by llacaze           #+#    #+#             */
+/*   Updated: 2017/12/12 14:07:50 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <stdlib.h>
-#include "../libft/includes/libft.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include "../includes/libft.h"
 
-typedef struct		s_info
+int		ft_strnequ(const char *s1, const char *s2, size_t len)
 {
-	size_t			address;
-	char			symbol;
-	struct s_info	*next;
-}					t_info;
+	if (s1 && s2)
+	{
+		if (ft_strncmp(s1, s2, len) == 0)
+			return (1);
+		return (0);
+	}
+	return (0);
+}

@@ -1,27 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_nm.h                                            :+:      :+:    :+:   */
+/*   ft_memcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/19 14:46:25 by llacaze          ###   ########.fr       */
+/*   Created: 2017/09/18 12:23:04 by Lulu              #+#    #+#             */
+/*   Updated: 2017/12/12 14:05:38 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include "../libft/includes/libft.h"
+#include <string.h>
+#include "../includes/libft.h"
 
-typedef struct		s_info
+int		ft_memcmp(const void *s1, const void *s2, size_t n)
 {
-	size_t			address;
-	char			symbol;
-	struct s_info	*next;
-}					t_info;
+	size_t			i;
+	unsigned char	*s12;
+	unsigned char	*s22;
+
+	i = 0;
+	s12 = (unsigned char *)s1;
+	s22 = (unsigned char *)s2;
+	while (i < n)
+	{
+		if (s12[i] != s22[i])
+			return (s12[i] - s22[i]);
+		i++;
+	}
+	return (0);
+}
