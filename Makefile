@@ -6,7 +6,7 @@
 #    By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/20 21:33:19 by llacaze           #+#    #+#              #
-#    Updated: 2019/11/20 22:38:24 by llacaze          ###   ########.fr        #
+#    Updated: 2019/11/25 11:57:18 by llacaze          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,8 @@ LIB_PATH = libft
 BUILD_PATH = objets
 
 SRCS =	main.c \
-			init_list.c
+			init_list.c\
+			ft_swap_list.c
 
 LIB_SRCS = $(LIB_PATH)/libft.a
 

@@ -6,14 +6,14 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 16:51:32 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/20 23:09:27 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/11/21 16:53:27 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_nm.h"
 #include "libft.h"
 
-void	ft_putnbr_base(size_t n, size_t base)
+void	ft_putnbr_base(size_t n, size_t base, char *str)
 {
 	if (base == 10)
 		ft_putnbr(n);
@@ -22,11 +22,11 @@ void	ft_putnbr_base(size_t n, size_t base)
 	else
 	{
 		if (n >= base)
-			ft_putnbr_base(n / base, base);
+			ft_putnbr_base(n / base, base, str);
 		if (n % base < 10)
-			ft_putchar((n % base) + 48);
+			str[ft_strlen(str)] = ((n % base) + 48);
 		else
-			ft_putchar((n % base) - 10 + 65);
+			str[ft_strlen(str)] = ((n % base) - 10 + 65);
 	}
 }
 
@@ -47,14 +47,17 @@ char	check_for_section(t_info *data, t_mysects *sections)
 
 	if ((right_sect = find_section_from_nsect(sections, data->n_sect)))
 	{
-		if (ft_strcmp(right_sect->name, SECT_TEXT))
+		printf("|%d|", (bool)(ft_strcmp(right_sect->name, SECT_DATA)));
+		if (!ft_strcmp(right_sect->name, SECT_TEXT))
 			return ('T');
-		else if (ft_strcmp(right_sect->name, SECT_DATA))
+		else if (!ft_strcmp(right_sect->name, SECT_DATA))
 			return ('D');
-		else if (ft_strcmp(right_sect->name, SECT_BSS))
+		else if (!ft_strcmp(right_sect->name, SECT_BSS))
 			return ('B');
 		else
 			return ('S');
+		if (!(data->n_type & N_EXT))
+			return (data->n_type - 'A' - 'a');
 	}
 	return 'k';
 }
@@ -83,19 +86,47 @@ char	get_symbol_letter(t_info *data, t_mysects *sections)
 	return 'p';
 }
 
+char		*ft_str_lowerchar(char *str)
+{
+	int		i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (ft_isalpha(str[i]))
+			str[i] = ft_tolower(str[i]);
+		i++;
+	}
+	return (str);
+}
+
+char		*adding_0(char *str)
+{
+	int		i;
+	char	*dump;
+
+	dump = ft_strnew(32);
+	i = 0;
+	while (i < 16 - ft_strlen(str))
+	{
+		dump[i] = '0';
+		i++;
+	}
+	dump[i] = '\0';
+	if (ft_strlen(str) == 1) return ("                ");
+	return (ft_str_lowerchar(ft_strjoin(dump, str)));
+}
+
 void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sections, t_info *data)
 {
 	uint32_t			i;
 	void		*strtab;
 	void		*symtab;
-	// t_info			*data;
-	
+	char		*zero = (char *)malloc(sizeof(char *) + 52);
 
 	i = 0;
-	// element = (void *)ptr + symoff;
 	strtab = (void *)ptr + sym->stroff;
 	symtab = (void *)ptr + sym->symoff;
-	// data = (t_info *)malloc(sizeof(t_info));
 	while (i < sym->nsyms)
 	{
 		data->symname = ft_strdup(strtab + ((struct nlist_64 *)symtab)->n_un.n_strx);
@@ -104,7 +135,10 @@ void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sect
 		data->n_type = ((struct nlist_64 *)symtab)->n_type;
 		data->n_sect = ((struct nlist_64 *)symtab)->n_sect;
 		data->symbol_letter = get_symbol_letter(data, sections);
-		if (data->name_not_found == false && !(N_STAB & data->n_type)) printf("%lld %c %s\n", ((struct nlist_64 *)symtab)->n_value, data->symbol_letter, data->symname);
+		data->value = (char *)malloc(sizeof(char *) * 256);
+		ft_putnbr_base(((struct nlist_64 *)symtab)->n_value, 16, data->value);
+		data->value = adding_0(data->value);
+		if (data->name_not_found == false && !(N_STAB & data->n_type)) printf("%s %c %s\n", data->value, data->symbol_letter, data->symname);
 		data = refresh_symbol(data);
 		symtab += sizeof(struct nlist_64);
 		i++;

@@ -1,6 +1,8 @@
 {
 	"files.associations": {
 		"libft.h": "c",
-		"ft_nm.h": "c"
+		"ft_nm.h": "c",
+		"stdlib.h": "c",
+		"mman.h": "c"
 	}
 }

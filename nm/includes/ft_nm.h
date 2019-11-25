@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/20 22:36:32 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/11/25 11:57:38 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct		s_info
 	bool			name_not_found;
 	char			*symname;
 	char			symbol_letter;
+	char			*value;
 	struct s_info	*next;
 	struct s_info	*prev;
 }					t_info;
@@ -49,3 +50,4 @@ t_mysects				*go_end_mysects(t_mysects *sections);
 t_info					*init_mysymbol(void);
 t_info					*refresh_symbol(t_info *symbol);
 
+t_info					*ft_swap_double(t_info *s1, t_info *s2, t_info **finfo);

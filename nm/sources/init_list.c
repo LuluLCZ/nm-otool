@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/20 21:22:39 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/20 22:52:13 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/11/21 15:30:05 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ t_info		*init_mysymbol(void)
 	symbol->symbol_letter = ' ';
 	symbol->symname = NULL;
 	symbol->n_sect = 0;
+	symbol->value = NULL;
 	return (symbol);
 }
 
@@ -63,6 +64,7 @@ t_info		*refresh_symbol(t_info *symbol)
 	symbol->symbol_letter = ' ';
 	symbol->symname = NULL;
 	symbol->n_sect = 0;
+	symbol->value = NULL;
 	return (symbol);
 }
 
