@@ -6,7 +6,7 @@
 #    By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/20 21:33:19 by llacaze           #+#    #+#              #
-#    Updated: 2019/11/25 11:57:18 by llacaze          ###   ########.fr        #
+#    Updated: 2019/12/03 16:20:57 by llacaze          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,10 +15,6 @@ NAME = ft_nm
 INC_PATH = includes
 LIB_PATH = libft
 BUILD_PATH = objets
-
-SRCS =	main.c \
-			init_list.c\
-			ft_swap_list.c
 
 LIB_SRCS = $(LIB_PATH)/libft.a
 
@@ -33,7 +29,8 @@ CFLAGS = -g3 -Wall -Wextra -Werror
 RM = rm -Rfv
 
 SRC =	main.c \
-		init_list.c
+		init_list.c\
+		ft_swap_list.c
 
 
 OBJ = $(SRC:.c=.o)

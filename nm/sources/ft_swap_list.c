@@ -6,11 +6,11 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/25 11:52:30 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/25 11:55:49 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/03 16:21:25 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_nm.h"
+#include "../includes/ft_nm.h"
 
 void		ft_norm_swap(t_info *s1, t_info *s2, t_info *first, t_info *last)
 {

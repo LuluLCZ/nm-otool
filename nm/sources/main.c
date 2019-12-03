@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 16:51:32 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/21 16:53:27 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/03 16:32:10 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,20 @@ void	ft_putnbr_base(size_t n, size_t base, char *str)
 	}
 }
 
+char		global_case_symbol(uint8_t n_type, char c)
+{
+	if (!(n_type & N_EXT))
+		return (ft_tolower(c));
+	else
+		return (c);
+}
+
 t_mysects	*find_section_from_nsect(t_mysects *sections, uint32_t nsect)
 {
 	sections = go_begin(sections);
 	while (sections)
 	{
+		// printf("%llu -> index, %u -> nsect", sections->index, nsect);
 		if (sections->index == nsect) return sections;
 		sections = sections->next;
 	}
@@ -45,26 +54,35 @@ char	check_for_section(t_info *data, t_mysects *sections)
 {
 	t_mysects	*right_sect;
 
+	// printf("%llu -> data->n_sect", data->n_sect);
 	if ((right_sect = find_section_from_nsect(sections, data->n_sect)))
 	{
-		printf("|%d|", (bool)(ft_strcmp(right_sect->name, SECT_DATA)));
+		if (!right_sect->name)
+		{
+			return (global_case_symbol(data->n_type, 'S'));
+		}
+		// printf("|%d|", (bool)(ft_strcmp(right_sect->name, SECT_DATA)));
 		if (!ft_strcmp(right_sect->name, SECT_TEXT))
-			return ('T');
+			return (global_case_symbol(data->n_type, 'T'));
 		else if (!ft_strcmp(right_sect->name, SECT_DATA))
-			return ('D');
+			return (global_case_symbol(data->n_type, 'D'));
 		else if (!ft_strcmp(right_sect->name, SECT_BSS))
-			return ('B');
+			return (global_case_symbol(data->n_type, 'B'));
+		else if (!ft_strcmp(right_sect->name, SECT_COMMON))
+			return (global_case_symbol(data->n_type, 'S'));
 		else
-			return ('S');
-		if (!(data->n_type & N_EXT))
-			return (data->n_type - 'A' - 'a');
+			return (global_case_symbol(data->n_type, 'S'));
+		// if (!(data->n_type & N_EXT))
+			// return (data->n_type - 'A' - 'a');
 	}
-	return 'k';
+	return '-';
 }
 
 char	get_symbol_letter(t_info *data, t_mysects *sections)
 {
-	if (N_STAB & data->n_type)
+	if ((N_TYPE & data->n_type) == N_SECT)
+		return check_for_section(data, sections);
+	else if (N_STAB & data->n_type)
 		return '-';
 	else if ((N_TYPE & data->n_type) == N_UNDF)
 	{
@@ -75,15 +93,13 @@ char	get_symbol_letter(t_info *data, t_mysects *sections)
 		else
 			return '?';
 	}
-	else if ((N_TYPE & data->n_type) == N_SECT)
-		// return 'T';
-		return check_for_section(data, sections); //For the moment we don't have sections so we'll just put S
+	 //For the moment we don't have sections so we'll just put S
 		// return (match_symbol_section(saved_sections, data));
 	else if ((N_TYPE & data->n_type) == N_ABS)
-		return 'A';
+		return (global_case_symbol(data->n_type, 'A'));
 	else if ((N_TYPE & data->n_type) == N_INDR)
-		return 'I';
-	return 'p';
+		return (global_case_symbol(data->n_type, 'I'));
+	return ' ';
 }
 
 char		*ft_str_lowerchar(char *str)
@@ -117,6 +133,28 @@ char		*adding_0(char *str)
 	return (ft_str_lowerchar(ft_strjoin(dump, str)));
 }
 
+t_info		*sort_names(t_info *data)
+{
+	t_info *head;
+
+	data = go_begin_info(data);
+	head = data;
+	if (data->next->symname != NULL && data->symname != NULL && data->next->next != NULL)
+	{
+		while (data->next->next)
+		{
+			if (ft_strcmp(data->symname, data->next->symname) > 0)
+			{
+				data = ft_swap_double(data, data->next, &head);
+				data = go_begin_info(data);
+			}
+			else
+				data = data->next;
+		}
+	}
+	return data;
+}
+
 void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sections, t_info *data)
 {
 	uint32_t			i;
@@ -138,18 +176,25 @@ void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sect
 		data->value = (char *)malloc(sizeof(char *) * 256);
 		ft_putnbr_base(((struct nlist_64 *)symtab)->n_value, 16, data->value);
 		data->value = adding_0(data->value);
-		if (data->name_not_found == false && !(N_STAB & data->n_type)) printf("%s %c %s\n", data->value, data->symbol_letter, data->symname);
+		// if (data->name_not_found == false && !(N_STAB & data->n_type)) printf("%s %c %s\n", data->value, data->symbol_letter, data->symname);
 		data = refresh_symbol(data);
 		symtab += sizeof(struct nlist_64);
 		i++;
+	}
+	data = sort_names(data);
+	data = go_begin_info(data);
+	while (data->next)
+	{
+		if (data->name_not_found == false && !(N_STAB & data->n_type)) printf("%s %c %s\n", data->value, data->symbol_letter, data->symname);
+		data = data->next;
 	}
 }
 
 t_mysects	*parse_mach_64_segment(void *sc, t_mysects *sections)
 {
-	void		*section;
+	void					*section;
 	uint32_t				nsects;
-	uint32_t						i;
+	uint32_t				i;
 
 	section = sc + sizeof(struct segment_command_64);
 	nsects = ((struct segment_command_64 *)sc)->nsects;
@@ -157,10 +202,10 @@ t_mysects	*parse_mach_64_segment(void *sc, t_mysects *sections)
 	while (i < nsects)
 	{
 		sections->address = ((struct section_64 *)section)->addr;
-		sections->index = sections->prev ? sections->prev->index + 1 : i;
+		sections->index = sections->prev ? sections->prev->index + 1 : 1;
 		sections->name = ft_strdup(((struct section_64 *)section)->sectname);
 		sections->size = ((struct section_64 *)section)->size;
-		printf("name of section: %s, index of section: %llu, address of section: %llu, size of section: %llu\n", sections->name, sections->index, sections->address, sections->size);
+		// printf("name of section: %s, index of section: %llu, address of section: %llu, size of section: %llu\n", sections->name, sections->index, sections->address, sections->size);
 		sections = refresh_mysect(sections);
 		section = section + sizeof(struct section_64);
 		i++;
@@ -177,38 +222,32 @@ void	parse_load_command(struct load_command *lc)
 	if (cmd == LC_SYMTAB) puts("SYMTAB");
 }
 
-void handle_64(char *ptr)
+void handle_64(char *ptr, void *header)
 {
 	uint32_t ncmds;
 	uint32_t i;
-	struct mach_header_64 *header;
 	struct load_command *lc;
 	struct segment_command_64 *sc;
 	struct symtab_command *sym;
 	t_mysects				*sections;
 	t_info					*data;
 
-	header = (struct mach_header_64 *)ptr;
 	sections = init_mysect();
-	ncmds = header->ncmds;
+	ncmds = ((struct mach_header_64 *)header)->ncmds;
 	i = 0;
-	lc = (void *)ptr + sizeof(*header);
+	lc = (void *)ptr + sizeof(struct mach_header_64);
 	data = init_mysymbol();
 	while (i < ncmds)
 	{
 		if (lc->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
-			// sections = sections + sizeof(struct s_section);
-			// printf("number of sections: %d\nname of first section: %s\nflags: %d\n", sc->nsects, sections->sectname, sc->flags);
-			// if (!ft_strcmp(sections->sectname))
-			// printf("number of sections: %d\nname of first section: %s\n", sc->nsects, sections->sectname);
 			parse_mach_64_symtab(sym, ptr, sections, data);
-			break;
+			// break;
 		}
 		else if (lc->cmd == LC_SEGMENT_64)
 		{
-			puts("SEGMENT 64");
+			// puts("SEGMENT 64");
 			sc = (struct segment_command_64 *)lc;
 			sections = parse_mach_64_segment(sc, sections);
 		}
@@ -221,17 +260,34 @@ void handle_64(char *ptr)
 
 void nm(char *ptr)
 {
-	unsigned int magic_number;
+	unsigned int	magic_number;
+	void			*header;
 
 	magic_number = *(int *) ptr;
-	if (magic_number == MH_MAGIC)
+	if (magic_number == MH_MAGIC || magic_number == MH_CIGAM)
 	{
-		// puts("Binaire pour 32-bits");
+		puts("Binaire pour 32-bits");
+		header = (struct mach_header *)ptr;
 	}
-	if (magic_number == MH_MAGIC_64)
+	else if (magic_number == MH_MAGIC_64 || magic_number == MH_CIGAM_64)
 	{
 		// puts("Binaire pour 64-bits");
-		handle_64(ptr);
+		header = (struct mach_header *)ptr;
+		handle_64(ptr, header);
+	}
+	else if (magic_number == FAT_MAGIC || magic_number == FAT_CIGAM)
+	{
+		puts("Binaire fat 32-bits");
+		header = (struct fat_header *)ptr;
+	}
+	else if (magic_number == FAT_MAGIC_64 || magic_number == FAT_CIGAM_64)
+	{
+		puts("Binaire fat 64-bits");
+		header = (struct fat_header_64 *)ptr;
+	}
+	else
+	{
+		puts("The file was not recognized as a valid object file");
 	}
 }
 

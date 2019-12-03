@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/20 21:22:39 by llacaze           #+#    #+#             */
-/*   Updated: 2019/11/21 15:30:05 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/03 16:12:51 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,20 @@ t_mysects	*go_begin(t_mysects *sections)
 		tmp = NULL;
 	}
 	return (sections);
+}
+
+t_info		*go_begin_info(t_info *data)
+{
+	t_info	*tmp;
+
+	while (data && data->prev)
+	{
+		tmp = data;
+		data = data->prev;
+		data->next = tmp;
+		tmp = NULL;
+	}
+	return (data);
 }
 
 t_mysects		*go_end_mysects(t_mysects *sections)
