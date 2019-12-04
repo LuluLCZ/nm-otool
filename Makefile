@@ -6,7 +6,7 @@
 #    By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/20 21:33:19 by llacaze           #+#    #+#              #
-#    Updated: 2019/12/03 16:20:57 by llacaze          ###   ########.fr        #
+#    Updated: 2019/12/04 16:51:02 by llacaze          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,9 @@ RM = rm -Rfv
 
 SRC =	main.c \
 		init_list.c\
-		ft_swap_list.c
+		ft_swap_list.c\
+		macho64.c\
+		macho32.c
 
 
 OBJ = $(SRC:.c=.o)
