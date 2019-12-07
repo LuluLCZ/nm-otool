@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/04 15:42:14 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/07 04:04:36 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sect
 	uint32_t			i;
 	void		*strtab;
 	void		*symtab;
-	char		*zero = (char *)malloc(sizeof(char *) + 52);
+	// char		*zero = (char *)malloc(sizeof(char *) + 52);
 
 	i = 0;
 	strtab = (void *)ptr + sym->stroff;
@@ -32,7 +32,7 @@ void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sect
 		data->symbol_letter = get_symbol_letter(data, sections);
 		data->value = (char *)malloc(sizeof(char *) * 256);
 		ft_putnbr_base(((struct nlist_64 *)symtab)->n_value, 16, data->value);
-		data->value = adding_0(data->value);
+		data->value = adding_0(data->value, (data->symbol_letter == 'T') ? 1 : 0, 64);
 		// if (data->name_not_found == false && !(N_STAB & data->n_type)) printf("%s %c %s\n", data->value, data->symbol_letter, data->symname);
 		data = refresh_symbol(data);
 		symtab += sizeof(struct nlist_64);
@@ -42,7 +42,20 @@ void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sect
 	data = go_begin_info(data);
 	while (data->next)
 	{
-		if (data->name_not_found == false && !(N_STAB & data->n_type)) printf("%s %c %s\n", data->value, data->symbol_letter, data->symname);
+		if (data->name_not_found == false && !(N_STAB & data->n_type))
+		{
+			ft_putstr(data->value);
+			ft_putchar(' ');
+			ft_putchar(data->symbol_letter);
+			ft_putchar(' ');
+			ft_putendl(data->symname);
+			if (data->symbol_letter == 'I')
+			{
+				ft_putstr(" (indirect for ");
+				ft_putstr(data->symname);
+				ft_putendl(")");
+			}
+		}
 		data = data->next;
 	}
 }
@@ -62,7 +75,6 @@ t_mysects	*parse_mach_64_segment(void *sc, t_mysects *sections)
 		sections->index = sections->prev ? sections->prev->index + 1 : 1;
 		sections->name = ft_strdup(((struct section_64 *)section)->sectname);
 		sections->size = ((struct section_64 *)section)->size;
-		// printf("name of section: %s, index of section: %llu, address of section: %llu, size of section: %llu\n", sections->name, sections->index, sections->address, sections->size);
 		sections = refresh_mysect(sections);
 		section = section + sizeof(struct section_64);
 		i++;

@@ -6,7 +6,7 @@
 #    By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/20 21:33:19 by llacaze           #+#    #+#              #
-#    Updated: 2019/12/04 16:51:02 by llacaze          ###   ########.fr        #
+#    Updated: 2019/12/06 20:48:55 by llacaze          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,8 @@ SRC =	main.c \
 		init_list.c\
 		ft_swap_list.c\
 		macho64.c\
-		macho32.c
+		macho32.c\
+		fat32.c
 
 
 OBJ = $(SRC:.c=.o)
@@ -49,11 +50,11 @@ all:  $(NAME)
 
 $(NAME) : libft $(OBJS)
 		$(RM) $(NAME)
-		$(CC) -o $@ $(OBJS) $(HEAD_DIR)/libft.a
+		$(CC) $(CFLAGS) -o $@ $(OBJS) $(HEAD_DIR)/libft.a
 
 $(DIR_OBJ)/%.o: $(DIR_SRC)/%.c
 		@mkdir -p $(DIR_OBJ)
-		$(CC) -c -o $@ -I./includes/ -I./libft/includes $^
+		$(CC) $(CFLAGS) -c -o $@ -I./includes/ -I./libft/includes $^
 
 libft:
 		make -C $(HEAD_DIR)

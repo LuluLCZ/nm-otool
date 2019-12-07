@@ -3,6 +3,7 @@
 		"libft.h": "c",
 		"ft_nm.h": "c",
 		"stdlib.h": "c",
-		"mman.h": "c"
+		"mman.h": "c",
+		"nlist.h": "c"
 	}
 }

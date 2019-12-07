@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/20 21:22:39 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/03 16:12:51 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/07 00:14:28 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,20 @@ t_mysects	*init_mysect(void)
 	t_mysects	*sections;
 
 	if (!(sections = (t_mysects *)malloc(sizeof(t_mysects))))
+		return (NULL);
+	sections->prev = NULL;
+	sections->next = NULL;
+	sections->name = NULL;
+	sections->index = 0;
+	sections->address = 0;
+	return (sections);
+}
+
+t_mysects_32	*init_mysect_32(void)
+{
+	t_mysects_32	*sections;
+
+	if (!(sections = (t_mysects_32 *)malloc(sizeof(t_mysects_32))))
 		return (NULL);
 	sections->prev = NULL;
 	sections->next = NULL;
@@ -84,6 +98,36 @@ t_mysects	*refresh_mysect(t_mysects *sections)
 	return (sections);
 }
 
+t_mysects_32	*refresh_mysect_32(t_mysects_32 *sections)
+{
+	t_mysects_32	*tmp;
+
+	tmp = sections;
+	sections = sections->next;
+	if (!(sections = (t_mysects_32 *)malloc(sizeof(t_mysects_32) * 128)))
+		return (NULL);
+	sections->prev = tmp;
+	sections->next = NULL;
+	sections->name = NULL;
+	sections->index = 0;
+	sections->address = 0;
+	return (sections);
+}
+
+t_mysects_32	*go_begin_32(t_mysects_32 *sections)
+{
+	t_mysects_32	*tmp;
+
+	while (sections && sections->prev)
+	{
+		tmp = sections;
+		sections = sections->prev;
+		sections->next = tmp;
+		tmp = NULL;
+	}
+	return (sections);
+}
+
 t_mysects	*go_begin(t_mysects *sections)
 {
 	t_mysects	*tmp;
@@ -113,6 +157,12 @@ t_info		*go_begin_info(t_info *data)
 }
 
 t_mysects		*go_end_mysects(t_mysects *sections)
+{
+	while (sections && sections->next) sections = sections->next;
+	return sections;
+}
+
+t_mysects_32		*go_end_mysects_32(t_mysects_32 *sections)
 {
 	while (sections && sections->next) sections = sections->next;
 	return sections;
