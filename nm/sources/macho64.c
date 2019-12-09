@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/09 17:48:07 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/09 18:22:43 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,11 +92,11 @@ t_mysects	*parse_mach_64_segment(void *sc, t_mysects *sections, int reverse, t_f
 	i = 0;
 	while (i < nsects)
 	{
-		if (ifswap64(((struct section_64 *)section)->size, reverse) > file.size) 
+		if (ifswap64(((struct section_64 *)section)->size, reverse) > file.size)
 		{
 			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
 			ft_putstr_fd(file.filename, 2);
-			ft_putstr_fd("truncated or malformed object (offset field plus size field of section ", 2);
+			ft_putstr_fd(" truncated or malformed object (offset field plus size field of section ", 2);
 			ft_putnbr_fd(i, 2);
 			ft_putendl_fd(" in LC_SEGMENT_64 command 1 extends past the end of the file)\n", 2);
 			return (NULL);
