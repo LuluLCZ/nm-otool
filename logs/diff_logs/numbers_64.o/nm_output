@@ -1,7 +1,0 @@
-                 U ___stack_chk_fail
-                 U ___stack_chk_guard
-                 U _atoi
-0000000000000000 T _main
-                 U _memcpy
-                 U _printf
-00000000000000d0 s l_main.str

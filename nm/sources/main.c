@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 16:51:32 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/07 04:13:06 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/09 16:42:22 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ t_info		*sort_names(t_info *data)
 	return data;
 }
 
-void nm(void *ptr, char *filename)
+void nm(void *ptr, t_file file)
 {
 	unsigned int	magic_number;
 	void			*header;
@@ -177,19 +177,19 @@ void nm(void *ptr, char *filename)
 	{
 		// puts("Binaire pour 32-bits");
 		header = (struct mach_header *)ptr;
-		handle_32(ptr, header, (magic_number == MH_CIGAM) ? 1 : 0);
+		handle_32(ptr, header, (magic_number == MH_CIGAM) ? 1 : 0, file);
 	}
 	else if (magic_number == MH_MAGIC_64 || magic_number == MH_CIGAM_64)
 	{
 		// puts("Binaire pour 64-bits");
 		header = (struct mach_header_64 *)ptr;
-		handle_64(ptr, header);
+		handle_64(ptr, header, (magic_number == MH_CIGAM) ? 1 : 0, file);
 	}
 	else if (magic_number == FAT_MAGIC || magic_number == FAT_CIGAM)
 	{
 		// ft_putendl("Binaire fat 32-bits");
 		header = (struct fat_header *)ptr;
-		handle_fat_32(ptr, header, filename, (magic_number == FAT_CIGAM) ? 1 : 0);
+		handle_fat_32(ptr, header, file, (magic_number == FAT_CIGAM) ? 1 : 0);
 	}
 	else if (magic_number == FAT_MAGIC_64 || magic_number == FAT_CIGAM_64)
 	{
@@ -208,7 +208,9 @@ int main(int ac, char **av)
 	int fd;
 	void *ptr;
 	struct stat buf;
+	t_file		file;
 
+	// file = (t_file)malloc(sizeof(t_file));
 	if (ac != 2)
 		fprintf(stderr, "give args");
 	if ((fd = open(av[1], O_RDONLY)) < 0)
@@ -226,7 +228,9 @@ int main(int ac, char **av)
 		perror("mmap");
 		return (EXIT_FAILURE);
 	}
-	nm(ptr, av[1]);
+	file.filename = ft_strdup(av[1]);
+	file.size = buf.st_size;
+	nm(ptr, file);
 	if (munmap(ptr, buf.st_size) < 0)
 	{
 		perror("munmap");

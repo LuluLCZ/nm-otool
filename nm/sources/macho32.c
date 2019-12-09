@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 15:43:59 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/07 04:04:23 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/09 17:55:54 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,17 +59,26 @@ void parse_mach_32_symtab(struct symtab_command *sym, char *ptr, t_mysects *sect
 	}
 }
 
-t_mysects	*parse_mach_32_segment(void *sc, t_mysects *sections, int reverse)
+t_mysects	*parse_mach_32_segment(void *sc, t_mysects *sections, int reverse, t_file file)
 {
 	void					*section;
 	uint32_t				nsects;
 	uint32_t				i;
 
 	section = sc + sizeof(struct segment_command);
-	nsects = ((reverse == 1) ? ft_swap_int32(((struct segment_command *)sc)->nsects) : ((struct segment_command *)sc)->nsects);
+	nsects = ifswap32(((struct segment_command *)sc)->nsects, reverse);
 	i = 0;
 	while (i < nsects)
 	{
+		if (ifswap32(((struct section *)section)->size, reverse) > file.size) 
+		{
+			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+			ft_putstr_fd(file.filename, 2);
+			ft_putstr_fd("truncated or malformed object (offset field plus size field of section ", 2);
+			ft_putnbr_fd(i, 2);
+			ft_putendl_fd(" in LC_SEGMENT command 1 extends past the end of the file)\n", 2);
+			return (NULL);
+		}
 		sections->address = ifswap32(((struct section *)section)->addr, reverse);
 		sections->index = sections->prev ? sections->prev->index + 1 : 1;
 		sections->name = ft_strdup(((struct section *)section)->sectname);
@@ -81,7 +90,7 @@ t_mysects	*parse_mach_32_segment(void *sc, t_mysects *sections, int reverse)
 	return (sections);
 }
 
-void handle_32(void *ptr, void *header, int reverse)
+int handle_32(void *ptr, void *header, int reverse, t_file file)
 {
 	uint32_t ncmds;
 	uint32_t i;
@@ -108,9 +117,11 @@ void handle_32(void *ptr, void *header, int reverse)
 		else if (cmd == LC_SEGMENT)
 		{
 			sc = (struct segment_command *)lc;
-			sections = parse_mach_32_segment(sc, sections, reverse);
+			if ((sections = parse_mach_32_segment(sc, sections, reverse, file)) == NULL)
+				return (-1);
 		}
 		lc = (void *) lc + cmdsize;
 		i++;
 	}
+	return (0);
 }

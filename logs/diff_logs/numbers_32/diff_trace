@@ -1,9 +1,0 @@
-0a1,8
->          U ___stack_chk_fail
->          U ___stack_chk_guard
-> 00001000 T __mh_execute_header
->          U _atoi
-> 00001e80 T _main
->          U _memcpy
->          U _printf
->          U dyld_stub_binder

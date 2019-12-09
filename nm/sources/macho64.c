@@ -6,34 +6,55 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/07 04:04:36 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/09 17:48:07 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_nm.h"
 
-void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sections, t_info *data)
+
+char	*ft_strdup_access(const char *src)
+{
+	char	*dest;
+	int		i;
+
+	i = 0;
+	if (src == NULL)
+		return ("");
+	if (!(dest = (char *)malloc(sizeof(char) * ft_strlen(src) + 1)))
+		return (NULL);
+	while (src[i])
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+
+void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sections, t_info *data, int reverse)
 {
 	uint32_t			i;
 	void		*strtab;
 	void		*symtab;
-	// char		*zero = (char *)malloc(sizeof(char *) + 52);
 
 	i = 0;
-	strtab = (void *)ptr + sym->stroff;
-	symtab = (void *)ptr + sym->symoff;
-	while (i < sym->nsyms)
+	strtab = (void *)ptr + ifswap32(sym->stroff, reverse);
+	symtab = (void *)ptr + ifswap32(sym->symoff, reverse);
+	// printf("%d -> reverse -> mach32sym\n", reverse);
+	while (i < ifswap32(sym->nsyms, reverse))
 	{
-		data->symname = ft_strdup(strtab + ((struct nlist_64 *)symtab)->n_un.n_strx);
+		if (!(strtab + ifswap64(((struct nlist_64 *)symtab)->n_un.n_strx, reverse))) printf("fweijfo\n");
+		data->symname = ft_strdup(strtab + ifswap64(((struct nlist_64 *)symtab)->n_un.n_strx, reverse));
 		if (ft_strlen(data->symname) == 0) data->name_not_found = true;
 		else data->name_not_found = false;
 		data->n_type = ((struct nlist_64 *)symtab)->n_type;
 		data->n_sect = ((struct nlist_64 *)symtab)->n_sect;
 		data->symbol_letter = get_symbol_letter(data, sections);
 		data->value = (char *)malloc(sizeof(char *) * 256);
-		ft_putnbr_base(((struct nlist_64 *)symtab)->n_value, 16, data->value);
-		data->value = adding_0(data->value, (data->symbol_letter == 'T') ? 1 : 0, 64);
-		// if (data->name_not_found == false && !(N_STAB & data->n_type)) printf("%s %c %s\n", data->value, data->symbol_letter, data->symname);
+		ft_putnbr_base(ifswap64(((struct nlist_64 *)symtab)->n_value, reverse), 16, data->value);
+		data->value = adding_0(data->value, data->symbol_letter == 'T' ? 1 : 0, 64);
 		data = refresh_symbol(data);
 		symtab += sizeof(struct nlist_64);
 		i++;
@@ -60,21 +81,30 @@ void parse_mach_64_symtab(struct symtab_command *sym, char *ptr, t_mysects *sect
 	}
 }
 
-t_mysects	*parse_mach_64_segment(void *sc, t_mysects *sections)
+t_mysects	*parse_mach_64_segment(void *sc, t_mysects *sections, int reverse, t_file file)
 {
 	void					*section;
 	uint32_t				nsects;
 	uint32_t				i;
 
 	section = sc + sizeof(struct segment_command_64);
-	nsects = ((struct segment_command_64 *)sc)->nsects;
+	nsects = ifswap64(((struct segment_command_64 *)sc)->nsects, reverse);
 	i = 0;
 	while (i < nsects)
 	{
-		sections->address = ((struct section_64 *)section)->addr;
+		if (ifswap64(((struct section_64 *)section)->size, reverse) > file.size) 
+		{
+			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+			ft_putstr_fd(file.filename, 2);
+			ft_putstr_fd("truncated or malformed object (offset field plus size field of section ", 2);
+			ft_putnbr_fd(i, 2);
+			ft_putendl_fd(" in LC_SEGMENT_64 command 1 extends past the end of the file)\n", 2);
+			return (NULL);
+		}
+		sections->address = ifswap64(((struct section_64 *)section)->addr, reverse);
 		sections->index = sections->prev ? sections->prev->index + 1 : 1;
 		sections->name = ft_strdup(((struct section_64 *)section)->sectname);
-		sections->size = ((struct section_64 *)section)->size;
+		sections->size = ifswap64(((struct section_64 *)section)->size, reverse);
 		sections = refresh_mysect(sections);
 		section = section + sizeof(struct section_64);
 		i++;
@@ -91,7 +121,68 @@ void	parse_load_command(struct load_command *lc)
 	if (cmd == LC_SYMTAB) puts("SYMTAB");
 }
 
-void handle_64(char *ptr, void *header)
+int	check_load_command_64(t_file file, int reverse, void *header, struct load_command *lc, uint32_t ncmds)
+{
+	uint32_t i;
+	struct segment_command_64 *sc;
+
+	i = 0;
+	while (i < ncmds)
+	{
+		if ((void *)lc + (lc->cmdsize || 1) > (void *)header + sizeof(struct mach_header_64) + ((struct mach_header_64 *)header)->sizeofcmds)
+		{
+			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+			ft_putstr_fd(file.filename, 2);
+			ft_putstr_fd(" truncated or malformed object (load command ", 2);
+			ft_putnbr_fd(i, 2);
+			ft_putendl_fd(" extends past the end all load commands in the file)\n", 2);
+			return (-1);
+		}
+		if (ifswap64(((struct mach_header_64 *)header)->sizeofcmds, reverse) > file.size)
+		{
+			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+			ft_putstr_fd(file.filename, 2);
+			ft_putendl_fd(" truncated or malformed object (load commands extend past the end of the file)\n", 2);
+			return (-1);
+		}
+		if (ifswap64(lc->cmdsize, reverse) > file.size)
+		{
+			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+			ft_putstr_fd(file.filename, 2);
+			ft_putstr_fd(" truncated or malformed object (load command ", 2);
+			ft_putnbr_fd(i, 2);
+			ft_putendl_fd(" extends past end of file)\n", 2);
+			return (-1);
+		}
+		else if (ifswap64(lc->cmd, reverse) == LC_SEGMENT_64)
+		{
+			sc = (struct segment_command_64 *)lc;
+			if (ifswap64(lc->cmdsize, reverse) != sizeof(*sc) + sizeof(struct section_64) * ((struct segment_command_64 *)sc)->nsects)
+			{
+				ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+				ft_putstr_fd(file.filename, 2);
+				ft_putstr_fd("truncated or malformed object (load command ", 2);
+				ft_putnbr_fd(i, 2);
+				ft_putendl_fd(" inconsistent cmdsize in LC_SEGMENT_64 for the number of sections)\n", 2);
+				return (-1);
+			}
+			if (file.size < ifswap64(sc->fileoff, reverse) + ifswap64(sc->filesize, reverse))
+			{
+				ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+				ft_putstr_fd(file.filename, 2);
+				ft_putstr_fd(" truncated or malformed object (load command ", 2);
+				ft_putnbr_fd(i, 2);
+				ft_putendl_fd(" fileoff field plus filesize field in LC_SEGMENT_64 extends past the end of the file)\n", 2);
+				return (-1);
+			}
+		}
+		lc = (void *) lc + ifswap64(lc->cmdsize, reverse);
+		i++;
+	}
+	return (0);
+}
+
+int	 handle_64(char *ptr, void *header, int reverse, t_file file)
 {
 	uint32_t ncmds;
 	uint32_t i;
@@ -102,27 +193,27 @@ void handle_64(char *ptr, void *header)
 	t_info					*data;
 
 	sections = init_mysect();
-	ncmds = ((struct mach_header_64 *)header)->ncmds;
+	ncmds = ifswap64(((struct mach_header_64 *)header)->ncmds, reverse);
 	i = 0;
 	lc = (void *)ptr + sizeof(struct mach_header_64);
 	data = init_mysymbol();
+	if (check_load_command_64(file, reverse, header, lc, ncmds) == -1)
+		return (-1);
 	while (i < ncmds)
 	{
-		if (lc->cmd == LC_SYMTAB)
+		if (ifswap64(lc->cmd, reverse) == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
-			parse_mach_64_symtab(sym, ptr, sections, data);
-			// break;
+			parse_mach_64_symtab(sym, ptr, sections, data, reverse);
 		}
-		else if (lc->cmd == LC_SEGMENT_64)
+		else if (ifswap64(lc->cmd, reverse) == LC_SEGMENT_64)
 		{
-			// puts("SEGMENT 64");
 			sc = (struct segment_command_64 *)lc;
-			sections = parse_mach_64_segment(sc, sections);
+			if ((sections = parse_mach_64_segment(sc, sections, reverse, file)) == NULL)
+				return (-1);
 		}
-		else if (lc->cmd == LC_SEGMENT)
-			puts("SEGMENT");
-		lc = (void *) lc + lc->cmdsize;
+		lc = (void *) lc + ifswap64(lc->cmdsize, reverse);
 		i++;
 	}
+	return (0);
 }

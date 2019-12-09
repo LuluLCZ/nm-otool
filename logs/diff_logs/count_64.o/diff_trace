@@ -1,6 +1,0 @@
-0a1,5
-> 0000000000000000 T _banane
-> 0000000000000010 T _main
->                  U _printf
->                  U _puts
->                  U _strlen

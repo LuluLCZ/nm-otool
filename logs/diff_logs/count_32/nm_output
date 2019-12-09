@@ -1,7 +1,0 @@
-00001000 T __mh_execute_header
-00001ed0 T _banane
-00001ee0 T _main
-         U _printf
-         U _puts
-         U _strlen
-         U dyld_stub_binder

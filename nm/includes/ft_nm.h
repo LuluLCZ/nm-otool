@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/07 03:19:17 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/09 16:17:28 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,12 @@ typedef struct			s_mysects_32
 	struct s_mysects_32	*prev;
 }						t_mysects_32;
 
+typedef struct			s_file
+{
+	char				*filename;
+	uint32_t			size;
+}						t_file;
+
 t_mysects				*init_mysect(void);
 t_mysects				*refresh_mysect(t_mysects *sections);
 t_mysects				*go_begin(t_mysects *sections);
@@ -66,7 +72,7 @@ void					free_mysects(t_mysects *sections);
 t_info					*init_mysymbol(void);
 t_info					*refresh_symbol(t_info *symbol);
 t_info					*ft_swap_double(t_info *s1, t_info *s2, t_info **finfo);
-void					handle_64(char *ptr, void *header);
+int						handle_64(char *ptr, void *header, int reverse, t_file file);
 t_info					*sort_names(t_info *data);
 void					ft_putnbr_base(size_t n, size_t base, char *str);
 char					global_case_symbol(uint8_t n_type, char c);
@@ -75,10 +81,10 @@ char					check_for_section(t_info *data, t_mysects *sections);
 char					get_symbol_letter(t_info *data, t_mysects *sections);
 char					*ft_str_lowerchar(char *str);
 char					*adding_0(char *str, int symbolAlpha, int process);
-void					handle_32(void *ptr, void *header, int reverse);
+int						handle_32(void *ptr, void *header, int reverse, t_file file);
 char					*adding_0_32(char *str);
-void					nm(void *ptr, char *filename);
-int						handle_fat_32(char *ptr, struct fat_header *header, char *filename, int reverse);
+void					nm(void *ptr, t_file file);
+int						handle_fat_32(char *ptr, struct fat_header *header, t_file file, int reverse);
 uint32_t				ft_swap_int32(uint32_t x);
 uint64_t				ft_swap_int64(uint64_t x);
 uint64_t				ifswap64(uint64_t x, int reverse);
