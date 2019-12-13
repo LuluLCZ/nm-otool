@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mama <mama@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 16:51:32 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/11 15:33:14 by mama             ###   ########.fr       */
+/*   Updated: 2019/12/13 22:29:31 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,10 +84,10 @@ char	check_for_section(t_info *data, t_mysects *sections)
 		else
 			return (global_case_symbol(data->n_type, 'S'));
 	}
-	return '-';
+	return '?';
 }
 
-char	get_symbol_letter(t_info *data, t_mysects *sections)
+char	get_symbol_letter(t_info *data, t_mysects *sections, uint64_t value)
 {
 	if ((N_TYPE & data->n_type) == N_SECT)
 		return check_for_section(data, sections);
@@ -95,10 +95,10 @@ char	get_symbol_letter(t_info *data, t_mysects *sections)
 		return '-';
 	else if ((N_TYPE & data->n_type) == N_UNDF)
 	{
-		if (data->name_not_found)
-			return 'C';
-		else if (data->n_type & N_EXT)
+		if (value == 0)
 			return 'U';
+		else if (data->n_type & N_EXT && ((data->n_type & N_TYPE) == N_UNDF))
+			return 'C';
 		else
 			return '?';
 	}
@@ -106,7 +106,7 @@ char	get_symbol_letter(t_info *data, t_mysects *sections)
 		return (global_case_symbol(data->n_type, 'A'));
 	else if ((N_TYPE & data->n_type) == N_INDR)
 		return (global_case_symbol(data->n_type, 'I'));
-	return ' ';
+	return '?';
 }
 
 char		*ft_str_lowerchar(char *str)
@@ -123,22 +123,23 @@ char		*ft_str_lowerchar(char *str)
 	return (str);
 }
 
-char		*adding_0(char *str, int symbolAlpha, int process)
+char		*adding_0(char *str, char symbolAlpha, int process, char *symname)
 {
 	uint32_t		i;
 	char	*dump;
 
 	dump = ft_strnew(16);
 	i = 0;
+	// printf("%s -> str\n", str);
 	while (i < ((process == 64) ? 16 : 8) - ft_strlen(str))
 	{
 		dump[i] = '0';
 		i++;
 	}
 	dump[i] = '\0';
-	if (ft_strlen(str) == 0 || ft_strlen(str) == 1)
+	if (ft_strlen(str) == 1 || symbolAlpha == 'I' || symbolAlpha == 'U')
 	{
-		if (symbolAlpha == 1)
+		if ((ft_strcmp(symname, "r") == 0 && ft_strlen(symname) == 1) || (ft_strcmp(symname, "bad string index") == 0 && ft_strlen(symname) == 17) || symbolAlpha == 'T' || symbolAlpha == '?')
 			return ((process == 64) ? ("0000000000000000") : ("00000000"));
 		return ((process == 64) ? ("                ") : ("        "));
 	}
@@ -155,7 +156,8 @@ t_info		*sort_names(t_info *data)
 	{
 		while (data->next->next)
 		{
-			if (ft_strcmp(data->symname, data->next->symname) > 0)
+			if (ft_strcmp(data->symname, data->next->symname) > 0 || (ft_strcmp(data->symname, data->next->symname) == 0 && ft_strcmp(&data->symbol_letter, &data->next->symbol_letter) > 0 && data->symbol_letter != '?') ||\
+			(ft_strcmp(data->symname, data->next->symname) == 0 && ft_strcmp(&data->symbol_letter, &data->next->symbol_letter) == 0 && ft_strcmp(data->value, data->next->value) > 0))
 			{
 				data = ft_swap_double(data, data->next, &head);
 				data = go_begin_info(data);
@@ -175,30 +177,30 @@ void nm(t_file file)
 	magic_number = *(uint32_t *)file.ptr;
 	if (magic_number == MH_MAGIC || magic_number == MH_CIGAM)
 	{
-		// puts("Binaire pour 32-bits");
+		puts("32");
 		header = (struct mach_header *)file.ptr;
-		handle_32(header, (magic_number == MH_CIGAM) ? 1 : 0, file);
+		file.reverse = (magic_number == MH_CIGAM) ? 1 : 0;
+		handle_32(header, file);
 	}
 	else if (magic_number == MH_MAGIC_64 || magic_number == MH_CIGAM_64)
 	{
-		// puts("Binaire pour 64-bits");
+		puts("64");
 		header = (struct mach_header_64 *)file.ptr;
-		handle_64(header, (magic_number == MH_CIGAM_64) ? 1 : 0, file);
+		file.reverse = (magic_number == MH_CIGAM) ? 1 : 0;
+		handle_64(header, file);
 	}
 	else if (magic_number == FAT_MAGIC || magic_number == FAT_CIGAM)
 	{
-		// ft_putendl("Binaire fat 32-bits");
 		header = (struct fat_header *)file.ptr;
-		handle_fat_32(header, file, (magic_number == FAT_CIGAM) ? 1 : 0);
+		file.reverse = (magic_number == MH_CIGAM) ? 1 : 0;
+		handle_fat_32(header, file);
 	}
 	else if (magic_number == FAT_MAGIC_64 || magic_number == FAT_CIGAM_64)
 	{
-		// puts("Binaire fat 64-bits");
 		header = (struct fat_header_64 *)file.ptr;
 	}
 	else
 	{
-		// printf("%x ->magic_number\n", magic_number);
 		puts("The file was not recognized as a valid object file");
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/20 21:22:39 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/07 00:14:28 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/13 20:07:59 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,18 +60,24 @@ t_info		*init_mysymbol(void)
 	return (symbol);
 }
 
+t_info			*go_end_info(t_info *info)
+{
+	while (info && info->next) info = info->next;
+	return info;
+}
+
 t_info		*refresh_symbol(t_info *symbol)
 {
-	t_info		*tmp;
+	t_info		*tmp1;
 
-	tmp = symbol;
+	tmp1 = symbol;
 	symbol = symbol->next;
 	if (!(symbol = (t_info *)malloc(sizeof(t_info) * 128)))
 	{
 		ft_putstr("PB MALLOC");
 		return NULL;
 	}
-	symbol->prev = tmp;
+	symbol->prev = tmp1;
 	symbol->next = NULL;
 	symbol->n_type = 0;
 	symbol->name_not_found = false;
@@ -161,6 +167,9 @@ t_mysects		*go_end_mysects(t_mysects *sections)
 	while (sections && sections->next) sections = sections->next;
 	return sections;
 }
+
+
+
 
 t_mysects_32		*go_end_mysects_32(t_mysects_32 *sections)
 {

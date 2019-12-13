@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fat32.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mama <mama@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 17:02:58 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/11 12:05:35 by mama             ###   ########.fr       */
+/*   Updated: 2019/12/13 20:44:40 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,11 +80,25 @@ uint64_t	ft_swap_int64(uint64_t x)
 	return (tmp1 | tmp2 | tmp3 | tmp4 | tmp5 | tmp6 | tmp7 | tmp8);
 }
 
-int		check_for_error_in_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_file file)
+int		check_for_error_in_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_file file, int reverse)
 {
 	uint32_t	i;
 
 	i = 0;
+	
+	if (ifswap32(fat_arch->align, reverse) > 32768)
+	{
+		ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+		ft_putstr_fd(file.filename, 2);
+		ft_putstr_fd(" truncated or malformed fat file (align: 2^", 2);
+		ft_putnbr_fd(ifswap32(fat_arch->align, reverse), 2);
+		ft_putstr_fd(" for cputype (", 2);
+		ft_putnbr_fd(ifswap32(fat_arch->cputype, reverse), 2);
+		ft_putstr_fd(") cpusubtype (", 2);
+		ft_putnbr_fd(ifswap32(fat_arch->cpusubtype, reverse), 2);
+		ft_putendl_fd(") (maximum 2^15))\n", 2);
+		return (-1);
+	}
 	while (i < nfat_arch)
 	{
 		if (fat_arch->offset == 0 && fat_arch->cputype == 0 && fat_arch->cpusubtype == 0)
@@ -168,7 +182,7 @@ int			handle_fat_32(struct fat_header *header, t_file file, int reverse)
 
 	i = 0;
 	fat_arch = (void *)file.ptr + sizeof(struct fat_header);
-	if (check_for_error_in_arch(ifswap32(header->nfat_arch, reverse), fat_arch, file) == -1)
+	if (check_for_error_in_arch(ifswap32(header->nfat_arch, reverse), fat_arch, file, reverse) == -1)
 		return (-1);
 	if (check_for_error_in_offset(file, reverse, header, fat_arch) == -1)
 		return (-1);
