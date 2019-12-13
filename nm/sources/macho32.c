@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   macho32.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mama <mama@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 15:43:59 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/09 17:55:54 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/10 15:04:24 by mama             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ t_mysects	*parse_mach_32_segment(void *sc, t_mysects *sections, int reverse, t_f
 	return (sections);
 }
 
-int handle_32(void *ptr, void *header, int reverse, t_file file)
+int handle_32(void *header, int reverse, t_file file)
 {
 	uint32_t ncmds;
 	uint32_t i;
@@ -103,7 +103,7 @@ int handle_32(void *ptr, void *header, int reverse, t_file file)
 	sections = init_mysect();
 	ncmds = ifswap32(((struct mach_header *)header)->ncmds, reverse);
 	i = 0;
-	lc = (struct load_command *)((void *)ptr + sizeof(struct mach_header));
+	lc = (struct load_command *)((void *)file.ptr + sizeof(struct mach_header));
 	data = init_mysymbol();
 	while (i < ncmds)
 	{
@@ -112,7 +112,7 @@ int handle_32(void *ptr, void *header, int reverse, t_file file)
 		if (cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
-			parse_mach_32_symtab(sym, ptr, sections, data, reverse);
+			parse_mach_32_symtab(sym, file.ptr, sections, data, reverse);
 		}
 		else if (cmd == LC_SEGMENT)
 		{

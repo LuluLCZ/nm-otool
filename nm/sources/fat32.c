@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fat32.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mama <mama@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 17:02:58 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/09 17:56:09 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/11 12:05:35 by mama             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int		check_for_error_in_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_fi
 	return (0);
 }
 
-int			check_for_host_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, int reverse, void *ptr, t_file file)
+int			check_for_host_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, int reverse, t_file file)
 {
 	uint32_t	i;
 
@@ -115,7 +115,7 @@ int			check_for_host_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, int rev
 	{
 		if (ifswap32(fat_arch->cputype, reverse) == CPU_TYPE_X86_64)
 		{
-			nm((void *)ptr + ft_swap_int32(fat_arch->offset), file);
+			nm((t_file){file.filename, file.size, (void *)file.ptr + ifswap32(fat_arch->offset, reverse)});
 			return (1);
 		}
 		fat_arch = (void *)fat_arch + sizeof(struct fat_arch);
@@ -161,18 +161,18 @@ int			check_for_error_in_offset(t_file file, int reverse, struct fat_header *hea
 	return (0);
 }
 
-int			handle_fat_32(char *ptr, struct fat_header *header, t_file file, int reverse)
+int			handle_fat_32(struct fat_header *header, t_file file, int reverse)
 {
 	uint32_t				i;
 	struct fat_arch	*fat_arch;
 
 	i = 0;
-	fat_arch = (void *)ptr + sizeof(struct fat_header);
+	fat_arch = (void *)file.ptr + sizeof(struct fat_header);
 	if (check_for_error_in_arch(ifswap32(header->nfat_arch, reverse), fat_arch, file) == -1)
 		return (-1);
 	if (check_for_error_in_offset(file, reverse, header, fat_arch) == -1)
 		return (-1);
-	if (check_for_host_arch(ifswap32(header->nfat_arch, reverse), fat_arch, reverse, ptr, file ) == 1)
+	if (check_for_host_arch(ifswap32(header->nfat_arch, reverse), fat_arch, reverse, file ) == 1)
 		return (1);
 	while (i < ifswap32(header->nfat_arch, reverse))
 	{
@@ -181,7 +181,7 @@ int			handle_fat_32(char *ptr, struct fat_header *header, t_file file, int rever
 		ft_putstr(" (for architecture ");
 		ft_putstr(get_arch_type((int)(ifswap32(fat_arch->cputype, reverse)), (int)(ifswap32(fat_arch->cpusubtype, reverse))));
 		ft_putstr("):\n");
-		nm((void *)ptr + ifswap32(fat_arch->offset, reverse), file);
+		nm((t_file){file.filename, file.size, (void *)file.ptr + ifswap32(fat_arch->offset, reverse)});
 		fat_arch = (void *)fat_arch + sizeof(struct fat_arch);
 		i++;
 	}

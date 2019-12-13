@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mama <mama@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 16:51:32 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/09 16:42:22 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/11 15:33:14 by mama             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,34 +167,34 @@ t_info		*sort_names(t_info *data)
 	return data;
 }
 
-void nm(void *ptr, t_file file)
+void nm(t_file file)
 {
-	unsigned int	magic_number;
+	uint32_t	magic_number;
 	void			*header;
 
-	magic_number = *(unsigned int *)ptr;
+	magic_number = *(uint32_t *)file.ptr;
 	if (magic_number == MH_MAGIC || magic_number == MH_CIGAM)
 	{
 		// puts("Binaire pour 32-bits");
-		header = (struct mach_header *)ptr;
-		handle_32(ptr, header, (magic_number == MH_CIGAM) ? 1 : 0, file);
+		header = (struct mach_header *)file.ptr;
+		handle_32(header, (magic_number == MH_CIGAM) ? 1 : 0, file);
 	}
 	else if (magic_number == MH_MAGIC_64 || magic_number == MH_CIGAM_64)
 	{
 		// puts("Binaire pour 64-bits");
-		header = (struct mach_header_64 *)ptr;
-		handle_64(ptr, header, (magic_number == MH_CIGAM) ? 1 : 0, file);
+		header = (struct mach_header_64 *)file.ptr;
+		handle_64(header, (magic_number == MH_CIGAM_64) ? 1 : 0, file);
 	}
 	else if (magic_number == FAT_MAGIC || magic_number == FAT_CIGAM)
 	{
 		// ft_putendl("Binaire fat 32-bits");
-		header = (struct fat_header *)ptr;
-		handle_fat_32(ptr, header, file, (magic_number == FAT_CIGAM) ? 1 : 0);
+		header = (struct fat_header *)file.ptr;
+		handle_fat_32(header, file, (magic_number == FAT_CIGAM) ? 1 : 0);
 	}
 	else if (magic_number == FAT_MAGIC_64 || magic_number == FAT_CIGAM_64)
 	{
 		// puts("Binaire fat 64-bits");
-		header = (struct fat_header_64 *)ptr;
+		header = (struct fat_header_64 *)file.ptr;
 	}
 	else
 	{
@@ -206,7 +206,7 @@ void nm(void *ptr, t_file file)
 int main(int ac, char **av)
 {
 	int fd;
-	void *ptr;
+	// void *ptr;
 	struct stat buf;
 	t_file		file;
 
@@ -223,15 +223,16 @@ int main(int ac, char **av)
 		perror("fstat");
 		return (EXIT_FAILURE);
 	}
-	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+	file.filename = ft_strdup(av[1]);
+	file.size = buf.st_size;
+	if ((file.ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 	{
 		perror("mmap");
 		return (EXIT_FAILURE);
 	}
-	file.filename = ft_strdup(av[1]);
-	file.size = buf.st_size;
-	nm(ptr, file);
-	if (munmap(ptr, buf.st_size) < 0)
+	// file.ptr = &*ptr;
+	nm(file);
+	if (munmap(file.ptr, buf.st_size) < 0)
 	{
 		perror("munmap");
 		return (EXIT_FAILURE);
