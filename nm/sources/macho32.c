@@ -3,124 +3,133 @@
 /*                                                        :::      ::::::::   */
 /*   macho32.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mama <mama@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 15:43:59 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/10 15:04:24 by mama             ###   ########.fr       */
+/*   Updated: 2019/12/13 22:42:08 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_nm.h"
 
-void parse_mach_32_symtab(struct symtab_command *sym, char *ptr, t_mysects *sections, t_info *data, int reverse)
+
+int	check_bad_string_32(char *str, t_file file)
+{
+	int		i;
+
+	if ((void *)str >= file.ptr + file.size || (void *)str < file.ptr)
+		return (-1);
+	i = 0;
+	while ((void *)str + i < file.ptr + file.size - 1 && str[i])
+		i++;
+	if (str[i])
+		return(i);
+	return (0);
+}
+
+void parse_mach_32_symtab(struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data)
 {
 	uint32_t			i;
-	void		*strtab;
 	void		*symtab;
 
 	i = 0;
-	strtab = (void *)ptr + ifswap32(sym->stroff, reverse);
-	symtab = (void *)ptr + ifswap32(sym->symoff, reverse);
-	// printf("%d -> reverse -> mach32sym\n", reverse);
-	while (i < ifswap32(sym->nsyms, reverse))
+	symtab = (void *)file.ptr + ifswap32(sym->symoff, file.reverse);
+	while (i < ifswap32(sym->nsyms, file.reverse))
 	{
-		data->symname = ft_strdup(strtab + ifswap32(((struct nlist *)symtab)->n_un.n_strx, reverse));
-		if (ft_strlen(data->symname) == 0) data->name_not_found = true;
-		else data->name_not_found = false;
+		data->symname = check_string(symtab, file, sym);
+		if (ft_strlen(data->symname) == 0 || (data->symname == NULL))
+			data->name_not_found = true;
 		data->n_type = ((struct nlist *)symtab)->n_type;
 		data->n_sect = ((struct nlist *)symtab)->n_sect;
-		data->symbol_letter = get_symbol_letter(data, sections);
 		data->value = (char *)malloc(sizeof(char *) * 256);
-		ft_putnbr_base(ifswap32(((struct nlist *)symtab)->n_value, reverse), 16, data->value);
-		data->value = adding_0(data->value, data->symbol_letter == 'T' ? 1 : 0, 32);
+		ft_putnbr_base(ifswap32((\
+		(struct nlist *)symtab)->n_value, file.reverse), 16, data->value);
+		data->symbol_letter = get_symbol_letter(data, sections,\
+		ifswap32(((struct nlist *)symtab)->n_value, file.reverse));
+		data->value = adding_0(data->value,\
+		data->symbol_letter, 32, data->symname);
 		data = refresh_symbol(data);
 		symtab += sizeof(struct nlist);
 		i++;
 	}
-	data = sort_names(data);
-	data = go_begin_info(data);
-	while (data->next)
-	{
-		if (data->name_not_found == false && !(N_STAB & data->n_type))
-		{
-			ft_putstr(data->value);
-			ft_putchar(' ');
-			ft_putchar(data->symbol_letter);
-			ft_putchar(' ');
-			ft_putendl(data->symname);
-			if (data->symbol_letter == 'I')
-			{
-				ft_putstr(" (indirect for ");
-				ft_putstr(data->symname);
-				ft_putendl(")");
-			}
-		}
-		data = data->next;
-	}
+	print_data(sort_names(data));
 }
 
-t_mysects	*parse_mach_32_segment(void *sc, t_mysects *sections, int reverse, t_file file)
+t_mysects	*parse_mach_32_segment(void *sc, t_mysects *sections, t_file file)
 {
-	void					*section;
-	uint32_t				nsects;
-	uint32_t				i;
+	void						*section;
+	uint32_t					nsects;
+	uint32_t					i;
 
 	section = sc + sizeof(struct segment_command);
-	nsects = ifswap32(((struct segment_command *)sc)->nsects, reverse);
+	nsects = ifswap32(((struct segment_command *)sc)->nsects, file.reverse);
 	i = 0;
 	while (i < nsects)
 	{
-		if (ifswap32(((struct section *)section)->size, reverse) > file.size) 
-		{
-			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
-			ft_putstr_fd(file.filename, 2);
-			ft_putstr_fd("truncated or malformed object (offset field plus size field of section ", 2);
-			ft_putnbr_fd(i, 2);
-			ft_putendl_fd(" in LC_SEGMENT command 1 extends past the end of the file)\n", 2);
+		if (error_1(i, ifswap32(((struct section *)section)->size,\
+			file.reverse), 0, file) == -1)
 			return (NULL);
-		}
-		sections->address = ifswap32(((struct section *)section)->addr, reverse);
+		sections->address = ifswap32(((struct section *)section)->addr,\
+		file.reverse);
 		sections->index = sections->prev ? sections->prev->index + 1 : 1;
 		sections->name = ft_strdup(((struct section *)section)->sectname);
-		sections->size = ifswap32(((struct section *)section)->size, reverse);
+		sections->size = ifswap32(((struct section *)section)->size,\
+		file.reverse);
 		sections = refresh_mysect(sections);
-		section = (void *)section + sizeof(struct section);
+		section = section + sizeof(struct section);
 		i++;
 	}
 	return (sections);
 }
 
-int handle_32(void *header, int reverse, t_file file)
+int								check_load_command(t_file file,\
+			void *header, struct load_command *lc, uint32_t ncmds)
 {
-	uint32_t ncmds;
-	uint32_t i;
-	struct load_command *lc;
-	struct segment_command *sc;
-	struct symtab_command *sym;
-	t_mysects				*sections;
-	t_info					*data;
+	uint32_t					i;
+	struct segment_command	*sc;
 
-	sections = init_mysect();
-	ncmds = ifswap32(((struct mach_header *)header)->ncmds, reverse);
 	i = 0;
-	lc = (struct load_command *)((void *)file.ptr + sizeof(struct mach_header));
-	data = init_mysymbol();
+	if (error_2(ncmds, file, 0, 0, 0) == -1)
+		return (-1);
 	while (i < ncmds)
 	{
-		uint32_t cmd = ifswap32(lc->cmd, reverse);
-		uint32_t cmdsize = ifswap32(lc->cmdsize, reverse);
-		if (cmd == LC_SYMTAB)
-		{
-			sym = (struct symtab_command *)lc;
-			parse_mach_32_symtab(sym, file.ptr, sections, data, reverse);
-		}
-		else if (cmd == LC_SEGMENT)
+		if (error_3(lc, file, i, header) == -1)
+			return (-1);
+		if (error_2(ncmds, file, 1, i,\
+			ifswap32(lc->cmdsize, file.reverse)) == -1)
+			return (-1);
+		if (ifswap32(lc->cmd, file.reverse) == LC_SEGMENT)
 		{
 			sc = (struct segment_command *)lc;
-			if ((sections = parse_mach_32_segment(sc, sections, reverse, file)) == NULL)
+			if (error_SEG_1(sc, lc, i, file) == -1)
 				return (-1);
 		}
-		lc = (void *) lc + cmdsize;
+		lc = (void *)lc + ifswap32(lc->cmdsize, file.reverse);
+		i++;
+	}
+	return (0);
+}
+
+int							handle_32(void *header, t_file file)
+{
+	uint32_t					ncmds;
+	uint32_t					i;
+	struct load_command			*lc;
+	t_mysects					*sections;
+	t_info						*data;
+
+	sections = init_mysect();
+	ncmds = ifswap32(((struct mach_header *)header)->ncmds, file.reverse);
+	i = 0;
+	lc = (void *)file.ptr + sizeof(struct mach_header);
+	data = init_mysymbol();
+	if (check_load_command(file, header, lc, ncmds) == -1)
+		return (-1);
+	while (i < ncmds)
+	{
+		if (handle_symtab(lc, data, file, sections) == -1)
+			return (-1);
+		lc = (void *)lc + ifswap32(lc->cmdsize, file.reverse);
 		i++;
 	}
 	return (0);

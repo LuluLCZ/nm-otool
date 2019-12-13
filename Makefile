@@ -6,7 +6,7 @@
 #    By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/20 21:33:19 by llacaze           #+#    #+#              #
-#    Updated: 2019/12/06 20:48:55 by llacaze          ###   ########.fr        #
+#    Updated: 2019/12/13 22:44:05 by llacaze          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,11 @@ SRC =	main.c \
 		ft_swap_list.c\
 		macho64.c\
 		macho32.c\
-		fat32.c
+		fat32.c\
+		corrupt64.c\
+		macho64_tools.c\
+		corrupt32.c\
+		macho32_tools.c
 
 
 OBJ = $(SRC:.c=.o)
