@@ -6,7 +6,7 @@
 /*   By: mama <mama@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/11 15:33:00 by mama             ###   ########.fr       */
+/*   Updated: 2019/12/12 16:10:19 by mama             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void parse_mach_64_symtab(struct symtab_command *sym, t_file file, t_mysects *se
 	// printf("%d -> reverse -> mach32sym\n", reverse);
 	while (i < ifswap32(sym->nsyms, reverse))
 	{
+		printf("%s -> symname\n", strtab + ifswap64(((struct nlist_64 *)symtab)->n_un.n_strx, reverse));
 		if (check_bad_string(strtab + ifswap64(((struct nlist_64 *)symtab)->n_un.n_strx, reverse), file) == -1)
 			data->symname = ft_strdup("bad index string");
 		else
