@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 17:02:58 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/13 20:44:40 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 15:05:25 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,22 +80,22 @@ uint64_t	ft_swap_int64(uint64_t x)
 	return (tmp1 | tmp2 | tmp3 | tmp4 | tmp5 | tmp6 | tmp7 | tmp8);
 }
 
-int		check_for_error_in_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_file file, int reverse)
+int		check_for_error_in_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_file file)
 {
 	uint32_t	i;
 
 	i = 0;
 	
-	if (ifswap32(fat_arch->align, reverse) > 32768)
+	if (ifswap32(fat_arch->align, file.reverse) > 32768)
 	{
 		ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
 		ft_putstr_fd(file.filename, 2);
 		ft_putstr_fd(" truncated or malformed fat file (align: 2^", 2);
-		ft_putnbr_fd(ifswap32(fat_arch->align, reverse), 2);
+		ft_putnbr_fd(ifswap32(fat_arch->align, file.reverse), 2);
 		ft_putstr_fd(" for cputype (", 2);
-		ft_putnbr_fd(ifswap32(fat_arch->cputype, reverse), 2);
+		ft_putnbr_fd(ifswap32(fat_arch->cputype, file.reverse), 2);
 		ft_putstr_fd(") cpusubtype (", 2);
-		ft_putnbr_fd(ifswap32(fat_arch->cpusubtype, reverse), 2);
+		ft_putnbr_fd(ifswap32(fat_arch->cpusubtype, file.reverse), 2);
 		ft_putendl_fd(") (maximum 2^15))\n", 2);
 		return (-1);
 	}
@@ -120,16 +120,16 @@ int		check_for_error_in_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_fi
 	return (0);
 }
 
-int			check_for_host_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, int reverse, t_file file)
+int			check_for_host_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_file file)
 {
 	uint32_t	i;
 
 	i = 0;
 	while (i < nfat_arch)
 	{
-		if (ifswap32(fat_arch->cputype, reverse) == CPU_TYPE_X86_64)
+		if (ifswap32(fat_arch->cputype, file.reverse) == CPU_TYPE_X86_64)
 		{
-			nm((t_file){file.filename, file.size, (void *)file.ptr + ifswap32(fat_arch->offset, reverse)});
+			nm((t_file){file.filename, file.size, (void *)file.ptr + ifswap32(fat_arch->offset, file.reverse), file.reverse});
 			return (1);
 		}
 		fat_arch = (void *)fat_arch + sizeof(struct fat_arch);
@@ -138,34 +138,34 @@ int			check_for_host_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, int rev
 	return (0);
 }
 
-int			check_for_error_in_offset(t_file file, int reverse, struct fat_header *header, struct fat_arch *fat_arch)
+int			check_for_error_in_offset(t_file file, struct fat_header *header, struct fat_arch *fat_arch)
 {
 	uint32_t		i;
 
 	i = 0;
-	while (i < ifswap32(header->nfat_arch, reverse))
+	while (i < ifswap32(header->nfat_arch, file.reverse))
 	{
-		if (ifswap32(fat_arch->size, reverse) + ifswap32(fat_arch->offset, reverse) > file.size)
+		if (ifswap32(fat_arch->size, file.reverse) + ifswap32(fat_arch->offset, file.reverse) > file.size)
 		{
 			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
 			ft_putstr_fd(file.filename, 2);
 			ft_putstr_fd(" truncated or malformed fat file (offset plus size of cputype (", 2);
-			ft_putnbr_fd(ifswap32(fat_arch->cputype, reverse), 2);
+			ft_putnbr_fd(ifswap32(fat_arch->cputype, file.reverse), 2);
 			ft_putstr_fd(") cpusubtype (", 2);
-			ft_putnbr_fd(ifswap32(fat_arch->cpusubtype, reverse), 2);
+			ft_putnbr_fd(ifswap32(fat_arch->cpusubtype, file.reverse), 2);
 			ft_putendl_fd(") extends past the end of the file)\n", 2);
 			return (-1);
 		}
-		if (ifswap32(fat_arch->offset, reverse) % 4096 != 0)
+		if (ifswap32(fat_arch->offset, file.reverse) % 4096 != 0)
 		{
 			ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
 			ft_putstr_fd(file.filename, 2);
 			ft_putstr_fd(" truncated or malformed fat file (offset: ", 2);
-			ft_putnbr_fd(ifswap32(fat_arch->offset, reverse), 2);
+			ft_putnbr_fd(ifswap32(fat_arch->offset, file.reverse), 2);
 			ft_putstr_fd(" for cputype (", 2);
-			ft_putnbr_fd(ifswap32(fat_arch->cputype, reverse), 2);
+			ft_putnbr_fd(ifswap32(fat_arch->cputype, file.reverse), 2);
 			ft_putstr_fd(") cpusubtype (", 2);
-			ft_putnbr_fd(ifswap32(fat_arch->cpusubtype, reverse), 2);
+			ft_putnbr_fd(ifswap32(fat_arch->cpusubtype, file.reverse), 2);
 			ft_putendl_fd(") not aligned on it's alignment (2^12))\n", 2);
 			return (-1);
 		}
@@ -175,27 +175,27 @@ int			check_for_error_in_offset(t_file file, int reverse, struct fat_header *hea
 	return (0);
 }
 
-int			handle_fat_32(struct fat_header *header, t_file file, int reverse)
+int			handle_fat_32(struct fat_header *header, t_file file)
 {
 	uint32_t				i;
 	struct fat_arch	*fat_arch;
 
 	i = 0;
 	fat_arch = (void *)file.ptr + sizeof(struct fat_header);
-	if (check_for_error_in_arch(ifswap32(header->nfat_arch, reverse), fat_arch, file, reverse) == -1)
+	if (check_for_error_in_arch(ifswap32(header->nfat_arch, file.reverse), fat_arch, file) == -1)
 		return (-1);
-	if (check_for_error_in_offset(file, reverse, header, fat_arch) == -1)
+	if (check_for_error_in_offset(file, header, fat_arch) == -1)
 		return (-1);
-	if (check_for_host_arch(ifswap32(header->nfat_arch, reverse), fat_arch, reverse, file ) == 1)
+	if (check_for_host_arch(ifswap32(header->nfat_arch, file.reverse), fat_arch, file ) == 1)
 		return (1);
-	while (i < ifswap32(header->nfat_arch, reverse))
+	while (i < ifswap32(header->nfat_arch, file.reverse))
 	{
 		ft_putstr("\n");
 		ft_putstr(file.filename);
 		ft_putstr(" (for architecture ");
-		ft_putstr(get_arch_type((int)(ifswap32(fat_arch->cputype, reverse)), (int)(ifswap32(fat_arch->cpusubtype, reverse))));
+		ft_putstr(get_arch_type((int)(ifswap32(fat_arch->cputype, file.reverse)), (int)(ifswap32(fat_arch->cpusubtype, file.reverse))));
 		ft_putstr("):\n");
-		nm((t_file){file.filename, file.size, (void *)file.ptr + ifswap32(fat_arch->offset, reverse)});
+		nm((t_file){file.filename, file.size, (void *)file.ptr + ifswap32(fat_arch->offset, file.reverse), file.reverse});
 		fat_arch = (void *)fat_arch + sizeof(struct fat_arch);
 		i++;
 	}

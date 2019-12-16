@@ -1,0 +1,6 @@
+1,2c1,2
+< 0000000100000000 S __mh_execute_header
+< 0000000100000f60 S _main
+---
+> 0000000100000000 T __mh_execute_header
+> 0000000100000f60 T _main

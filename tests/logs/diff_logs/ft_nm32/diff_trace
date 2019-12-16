@@ -1,0 +1,94 @@
+2,8c2,8
+< 00001906 s ___x86.get_pc_thunk.bx
+< 00001000 S __mh_execute_header
+< 00002872 S _add_flag
+< 00002a51 S _add_list
+< 000025a3 S _clear_env
+< 000028dd S _clear_flags
+< 00002ac7 S _clear_list
+---
+> 00001906 t ___x86.get_pc_thunk.bx
+> 00001000 T __mh_execute_header
+> 00002872 T _add_flag
+> 00002a51 T _add_list
+> 000025a3 T _clear_env
+> 000028dd T _clear_flags
+> 00002ac7 T _clear_list
+10,12c10,12
+< 00002605 S _create_env
+< 0000281b S _create_flag
+< 0000325a S _display_array
+---
+> 00002605 T _create_env
+> 0000281b T _create_flag
+> 0000325a T _display_array
+16,29c16,29
+< 000026cc S _ft_memcpy
+< 000031a5 S _ft_putstr
+< 000031c9 S _ft_putstr_fd
+< 00002703 S _ft_strcmp
+< 0000263e S _ft_strdup
+< 0000317d S _ft_strlen
+< 00002784 S _ft_strncmp
+< 00004040 ? _g_error
+< 00002945 S _get_key
+< 00002b05 S _get_list
+< 00002a13 S _get_n_flag
+< 00002d18 S _init_error
+< 00002bde S _list_len
+< 00001891 S _main
+---
+> 000026cc T _ft_memcpy
+> 000031a5 T _ft_putstr
+> 000031c9 T _ft_putstr_fd
+> 00002703 T _ft_strcmp
+> 0000263e T _ft_strdup
+> 0000317d T _ft_strlen
+> 00002784 T _ft_strncmp
+> 00004040 S _g_error
+> 00002945 T _get_key
+> 00002b05 T _get_list
+> 00002a13 T _get_n_flag
+> 00002d18 T _init_error
+> 00002bde T _list_len
+> 00001891 T _main
+31c31
+< 00002ca0 S _malloc_error
+---
+> 00002ca0 T _malloc_error
+34,37c34,37
+< 00001cef S _nm_32
+< 000021aa S _nm_64
+< 000018e0 S _nm_archive
+< 00001dbe S _nm_fat
+---
+> 00001cef T _nm_32
+> 000021aa T _nm_64
+> 000018e0 T _nm_archive
+> 00001dbe T _nm_fat
+39,41c39,41
+< 00002cca S _option_error
+< 00002c0a S _parse_error
+< 000031ee S _print_hexa
+---
+> 00002cca T _option_error
+> 00002c0a T _parse_error
+> 000031ee T _print_hexa
+43,50c43,50
+< 00002436 S _process_file
+< 00002552 S _process_list
+< 0000235a S _process_selection_file
+< 00001b9a S _read_segment_command
+< 00002051 S _read_segment_command64
+< 0000190a S _read_symtab
+< 00001de4 S _read_symtab64
+< 00002279 S _sort
+---
+> 00002436 T _process_file
+> 00002552 T _process_list
+> 0000235a T _process_selection_file
+> 00001b9a T _read_segment_command
+> 00002051 T _read_segment_command64
+> 0000190a T _read_symtab
+> 00001de4 T _read_symtab64
+> 00002279 T _sort

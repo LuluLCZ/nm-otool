@@ -1,0 +1,5 @@
+0000000100000000 S __mh_execute_header
+0000000100000f50 S _main
+                 U _printf
+0000000100001018 ? _une_globale
+                 U dyld_stub_binder
