@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/13 22:23:21 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 15:41:35 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,12 @@ struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data)
 			data->name_not_found = true;
 		data->n_type = ((struct nlist_64 *)symtab)->n_type;
 		data->n_sect = ((struct nlist_64 *)symtab)->n_sect;
-		data->value = (char *)malloc(sizeof(char *) * 256);
+		data->value = ft_memalloc(256);
 		ft_putnbr_base(ifswap64((\
 		(struct nlist_64 *)symtab)->n_value, file.reverse), 16, data->value);
 		data->symbol_letter = get_symbol_letter(data, sections,\
 		ifswap64(((struct nlist_64 *)symtab)->n_value, file.reverse));
-		data->value = adding_0(data->value,\
-		data->symbol_letter, 64, data->symname);
+		if (data->value) data->value = adding_0(data->value, data->symbol_letter, 64, data->symname);
 		data = refresh_symbol(data);
 		symtab += sizeof(struct nlist_64);
 		i++;
@@ -118,6 +117,8 @@ int								handle_64(void *header, t_file file)
 	struct load_command			*lc;
 	t_mysects					*sections;
 	t_info						*data;
+	struct segment_command_64	*sc;
+	struct symtab_command		*sym;
 
 	sections = init_mysect();
 	ncmds = ifswap64(((struct mach_header_64 *)header)->ncmds, file.reverse);
@@ -128,9 +129,18 @@ int								handle_64(void *header, t_file file)
 		return (-1);
 	while (i < ncmds)
 	{
-		if (handle_64_symtab(lc, data, file, sections) == -1)
-			return (-1);
-		lc = (void *)lc + ifswap32(lc->cmdsize, file.reverse);
+		if (ifswap32(lc->cmd, file.reverse) == LC_SYMTAB)
+		{
+			sym = (struct symtab_command *)lc;
+			parse_mach_64_symtab(sym, file, sections, data);
+		}
+		else if (ifswap32(lc->cmd, file.reverse) == LC_SEGMENT_64)
+		{
+			sc = (struct segment_command_64 *)lc;
+			if ((sections = parse_mach_64_segment(sc, sections, file)) == NULL)
+				return (-1);
+		}
+		lc = (void *) lc + ifswap32(lc->cmdsize, file.reverse);
 		i++;
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 17:02:58 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/16 15:23:09 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 16:01:19 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ int		check_for_error_in_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_fi
 		ft_putstr_fd(") cpusubtype (", 2);
 		ft_putnbr_fd(ifswap32(fat_arch->cpusubtype, file.reverse), 2);
 		ft_putendl_fd(") (maximum 2^15))\n", 2);
+			ft_putnbr_fd(file.reverse, 2);
 		return (-1);
 	}
 	while (i < nfat_arch)

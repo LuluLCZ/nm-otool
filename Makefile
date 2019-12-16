@@ -6,7 +6,7 @@
 #    By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/20 21:33:19 by llacaze           #+#    #+#              #
-#    Updated: 2019/12/13 22:44:05 by llacaze          ###   ########.fr        #
+#    Updated: 2019/12/16 15:26:21 by llacaze          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ CC = gcc
 
 OPTIONS = -c
 
-CFLAGS = -g3 -Wall -Wextra -Werror
+CFLAGS = -g3 -Wall -Wextra -Werror -fsanitize=address
 
 RM = rm -Rfv
 

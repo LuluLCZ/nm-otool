@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 16:51:32 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/16 15:21:26 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 17:06:40 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,13 @@ char	check_for_section(t_info *data, t_mysects *sections)
 		else if (!ft_strcmp(right_sect->name, SECT_BSS))
 			return (global_case_symbol(data->n_type, 'B'));
 		else if (!ft_strcmp(right_sect->name, SECT_COMMON))
+		{
 			return (global_case_symbol(data->n_type, 'S'));
+		}
 		else
+		{
 			return (global_case_symbol(data->n_type, 'S'));
+		}
 	}
 	return '?';
 }
@@ -128,9 +132,8 @@ char		*adding_0(char *str, char symbolAlpha, int process, char *symname)
 	uint32_t		i;
 	char	*dump;
 
-	dump = ft_strnew(16);
+	dump = ft_strnew(160000);
 	i = 0;
-	// printf("%s -> str\n", str);
 	while (i < ((process == 64) ? 16 : 8) - ft_strlen(str))
 	{
 		dump[i] = '0';
@@ -177,22 +180,22 @@ void nm(t_file file)
 	magic_number = *(uint32_t *)file.ptr;
 	if (magic_number == MH_MAGIC || magic_number == MH_CIGAM)
 	{
-		puts("32");
+		// puts("32");
 		header = (struct mach_header *)file.ptr;
 		file.reverse = (magic_number == MH_CIGAM) ? 1 : 0;
 		handle_32(header, file);
 	}
 	else if (magic_number == MH_MAGIC_64 || magic_number == MH_CIGAM_64)
 	{
-		puts("64");
+		// puts("64");
 		header = (struct mach_header_64 *)file.ptr;
-		file.reverse = (magic_number == MH_CIGAM) ? 1 : 0;
+		file.reverse = (magic_number == MH_CIGAM_64) ? 1 : 0;
 		handle_64(header, file);
 	}
 	else if (magic_number == FAT_MAGIC || magic_number == FAT_CIGAM)
 	{
 		header = (struct fat_header *)file.ptr;
-		file.reverse = (magic_number == MH_CIGAM) ? 1 : 0;
+		file.reverse = (magic_number == FAT_CIGAM) ? 1 : 0;
 		handle_fat_32(header, file);
 	}
 	else if (magic_number == FAT_MAGIC_64 || magic_number == FAT_CIGAM_64)

@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 15:43:59 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/13 22:42:08 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 15:43:48 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void parse_mach_32_symtab(struct symtab_command *sym, t_file file, t_mysects *se
 			data->name_not_found = true;
 		data->n_type = ((struct nlist *)symtab)->n_type;
 		data->n_sect = ((struct nlist *)symtab)->n_sect;
-		data->value = (char *)malloc(sizeof(char *) * 256);
+		data->value = ft_memalloc(256);
 		ft_putnbr_base(ifswap32((\
 		(struct nlist *)symtab)->n_value, file.reverse), 16, data->value);
 		data->symbol_letter = get_symbol_letter(data, sections,\
@@ -117,6 +117,8 @@ int							handle_32(void *header, t_file file)
 	struct load_command			*lc;
 	t_mysects					*sections;
 	t_info						*data;
+	struct symtab_command		*sym;
+	struct segment_command	*sc;
 
 	sections = init_mysect();
 	ncmds = ifswap32(((struct mach_header *)header)->ncmds, file.reverse);
@@ -127,8 +129,19 @@ int							handle_32(void *header, t_file file)
 		return (-1);
 	while (i < ncmds)
 	{
-		if (handle_symtab(lc, data, file, sections) == -1)
-			return (-1);
+		if (ifswap32(lc->cmd, file.reverse) == LC_SYMTAB)
+		{
+			sym = (struct symtab_command *)lc;
+			if (error_SYM(sym, file) == -1)
+				return (-1);
+			parse_mach_32_symtab(sym, file, sections, data);
+		}
+		else if (ifswap32(lc->cmd, file.reverse) == LC_SEGMENT)
+		{
+			sc = (struct segment_command *)lc;
+			if ((sections = parse_mach_32_segment(sc, sections, file)) == NULL)
+				return (-1);
+		}
 		lc = (void *)lc + ifswap32(lc->cmdsize, file.reverse);
 		i++;
 	}

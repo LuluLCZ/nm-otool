@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 22:30:57 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/13 22:33:12 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 17:09:45 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int		error_SEG_1(struct segment_command *sc, struct load_command *lc, uint32_t i
 		ft_putendl_fd(" inconsistent cmdsize in LC_SEGMENT for the number of sections)\n", 2);
 		return (-1);
 	}
-	if (file.size < ifswap64(sc->fileoff, file.reverse) + ifswap64(sc->filesize, file.reverse))
+	if (file.size < ifswap32(sc->fileoff, file.reverse) + ifswap32(sc->filesize, file.reverse))
 	{
 		ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
 		ft_putstr_fd(file.filename, 2);

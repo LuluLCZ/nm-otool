@@ -1,8 +1,0 @@
-1,3c1,3
-< 00001f4e s ___x86.get_pc_thunk.bx
-< 00001000 S __mh_execute_header
-< 00001e63 S _main
----
-> 00001f4e t ___x86.get_pc_thunk.bx
-> 00001000 T __mh_execute_header
-> 00001e63 T _main
