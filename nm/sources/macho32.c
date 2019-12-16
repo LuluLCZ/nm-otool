@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 15:43:59 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/16 15:43:48 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 18:06:10 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	check_bad_string_32(char *str, t_file file)
 	return (0);
 }
 
-void parse_mach_32_symtab(struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data)
+void					 parse_mach_32_symtab(struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data)
 {
 	uint32_t			i;
 	void		*symtab;
@@ -132,7 +132,7 @@ int							handle_32(void *header, t_file file)
 		if (ifswap32(lc->cmd, file.reverse) == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
-			if (error_SYM(sym, file) == -1)
+			if (error_SYM(sym, file) == -1 || error_SYMOFF(sym, file, i) == -1)
 				return (-1);
 			parse_mach_32_symtab(sym, file, sections, data);
 		}

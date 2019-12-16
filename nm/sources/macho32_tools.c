@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 22:32:39 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/13 22:39:12 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 17:43:24 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int								handle_symtab(struct load_command *lc,\
 	t_info *data, t_file file, t_mysects *sections)
 {
 	struct symtab_command		*sym;
-	struct segment_command	*sc;
+	struct segment_command		*sc;
 
 	if (ifswap32(lc->cmd, file.reverse) == LC_SYMTAB)
 	{
@@ -69,8 +69,7 @@ char							*check_string(void *symtab,\
 	void						*strtab;
 
 	strtab = (void *)file.ptr + ifswap32(sym->stroff, file.reverse);
-	i = check_bad_string(strtab + ifswap32(\
-		((struct nlist *)symtab)->n_un.n_strx, file.reverse), file);
+	i = check_bad_string(strtab + ifswap32(((struct nlist *)symtab)->n_un.n_strx, file.reverse), file);
 	if (i == -1)
 		return (ft_strdup("bad string index"));
 	else if (i != 0)

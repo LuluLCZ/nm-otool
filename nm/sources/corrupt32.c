@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 22:30:57 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/16 17:09:45 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 19:46:26 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,15 +100,33 @@ int		error_SYM(struct symtab_command *sym, t_file file)
 		ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
 		ft_putstr_fd(file.filename, 2);
 		ft_putstr_fd(" truncated or malformed object (string table at offset ", 2);
-		ft_putnbr_fd(sym->stroff, 2);
+		ft_putnbr_fd(ifswap32(sym->stroff, file.reverse), 2);
 		ft_putstr_fd(" with a size of ", 2);
-		ft_putnbr_fd(sym->strsize, 2);
+		ft_putnbr_fd(ifswap32(sym->strsize, file.reverse), 2);
 		ft_putstr_fd(", overlaps symbol table at offset ", 2);
-		ft_putnbr_fd(sym->symoff, 2);
+		ft_putnbr_fd(ifswap32(sym->symoff, file.reverse), 2);
 		ft_putstr_fd(" with a size of ", 2);
 		ft_putnbr_fd((sym->nsyms * sizeof(struct nlist)), 2);
 		ft_putendl_fd(")\n", 2);
 		return (-1);
 	}
+	return (0);
+}
+
+int		error_SYMOFF(struct symtab_command *sym, t_file file, uint32_t i)
+{
+	(void)sym;
+	(void)file;
+	(void)i;
+	// if (sym->symoff > file.size)
+	// {
+	// 	ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
+	// 	ft_putstr_fd(file.filename, 2);
+	// 	ft_putstr_fd(" truncated or malformed object (symoff field of LC_SYMTAB command ", 2);
+	// 	ft_putnbr_fd(i, 2);
+	// 	ft_putstr_fd(" extends past the end of the file", 2);
+	// 	ft_putendl_fd(")\n", 2);
+	// 	return (-1);
+	// }
 	return (0);
 }

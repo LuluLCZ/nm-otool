@@ -6,11 +6,34 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/16 15:41:35 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 19:44:01 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_nm.h"
+
+char			hex_digit(int v)
+{
+	if (v >= 0 && v < 10)
+		return ('0' + v);
+	else
+		return ('a' + v - 10);
+}
+
+void			print_address_hex(void *p0)
+{
+	int				i;
+	uintptr_t		p;
+
+	p = (uintptr_t)p0;
+	ft_putstr("0x");
+	i = (sizeof(p) << 2) - 4;
+	while (i >= 0)
+	{
+		i -= 4;
+		ft_putchar(hex_digit((p >> i) & 0xf));
+	}
+}
 
 int								check_bad_string(char *str, t_file file)
 {
@@ -69,12 +92,18 @@ t_mysects						*parse_mach_64_segment(void *sc,\
 		if (error_64_1(i, ifswap64(((struct section_64 *)section)->size,\
 			file.reverse), 0, file) == -1)
 			return (NULL);
-		sections->address = ifswap64(((struct section_64 *)section)->addr,\
-		file.reverse);
+		sections->address = ifswap64(((struct section_64 *)section)->addr, file.reverse);
+		sections->offset = ifswap64(((struct section_64 *)section)->offset, file.reverse);
 		sections->index = sections->prev ? sections->prev->index + 1 : 1;
 		sections->name = ft_strdup(((struct section_64 *)section)->sectname);
 		sections->size = ifswap64(((struct section_64 *)section)->size,\
 		file.reverse);
+		// if (!ft_strcmp(sections->name, "__TEXT") || !ft_strcmp(sections->name, "__text"))
+		// {
+		// 	ft_putstr("Contents of (__TEXT,__text) section :\n");
+		// 	while (((struct section_64 *)section)->offset)
+		// 	ft_putchar('\n');
+		// }
 		sections = refresh_mysect(sections);
 		section = section + sizeof(struct section_64);
 		i++;

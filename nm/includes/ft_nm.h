@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/13 22:45:10 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 18:14:41 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct			s_mysects
 	uint32_t			index;
 	uint32_t			address;
 	uint32_t			size;
+	uint32_t			offset;
 	struct s_mysects	*next;
 	struct s_mysects	*prev;
 }						t_mysects;
@@ -114,6 +115,8 @@ t_mysects				*parse_mach_32_segment(void *sc, t_mysects *sections, t_file file);
 void					parse_mach_64_symtab(struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data);
 void					parse_mach_32_symtab(struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data);
 int						check_bad_string(char *str, t_file file);
+int						error_SYMOFF(struct symtab_command *sym, t_file file, uint32_t i);
+
 
 
 

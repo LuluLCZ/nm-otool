@@ -6,12 +6,13 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 16:51:32 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/16 17:06:40 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 17:55:12 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_nm.h"
 #include "libft.h"
+
 
 uint32_t	ifswap32(uint32_t x, int reverse)
 {
@@ -142,7 +143,7 @@ char		*adding_0(char *str, char symbolAlpha, int process, char *symname)
 	dump[i] = '\0';
 	if (ft_strlen(str) == 1 || symbolAlpha == 'I' || symbolAlpha == 'U')
 	{
-		if ((ft_strcmp(symname, "r") == 0 && ft_strlen(symname) == 1) || (ft_strcmp(symname, "bad string index") == 0 && ft_strlen(symname) == 17) || symbolAlpha == 'T' || symbolAlpha == '?')
+		if ((ft_strcmp(symname, "r") == 0 && ft_strlen(symname) == 1) || (ft_strcmp(symname, "bad string index") == 0 && ft_strlen(symname) == 16) || symbolAlpha == 'T' || symbolAlpha == '?')
 			return ((process == 64) ? ("0000000000000000") : ("00000000"));
 		return ((process == 64) ? ("                ") : ("        "));
 	}
