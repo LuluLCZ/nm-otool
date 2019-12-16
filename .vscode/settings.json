@@ -4,6 +4,7 @@
 		"ft_nm.h": "c",
 		"stdlib.h": "c",
 		"mman.h": "c",
-		"nlist.h": "c"
+		"nlist.h": "c",
+		"type_traits": "c"
 	}
 }
