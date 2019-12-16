@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/16 19:44:01 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/16 20:56:49 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,21 @@ struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data)
 	print_64_data(sort_names(data));
 }
 
+void							hexdump(char *ptr)
+{
+	int							i;
+
+	i = 0;
+	while (i < 16)
+	{
+		// print_address_hex(ptr);
+		printf("%02x ", (uint8_t)ptr[i]);
+		// ft_putchar(' ');
+		i++;
+	}
+	ft_putchar('\n');
+}
+
 t_mysects						*parse_mach_64_segment(void *sc,\
 	t_mysects *sections, t_file file)
 {
@@ -98,12 +113,11 @@ t_mysects						*parse_mach_64_segment(void *sc,\
 		sections->name = ft_strdup(((struct section_64 *)section)->sectname);
 		sections->size = ifswap64(((struct section_64 *)section)->size,\
 		file.reverse);
-		// if (!ft_strcmp(sections->name, "__TEXT") || !ft_strcmp(sections->name, "__text"))
-		// {
-		// 	ft_putstr("Contents of (__TEXT,__text) section :\n");
-		// 	while (((struct section_64 *)section)->offset)
-		// 	ft_putchar('\n');
-		// }
+		if (!ft_strcmp(sections->name, "__TEXT") || !ft_strcmp(sections->name, "__text"))
+		{
+			ft_putstr("Contents of (__TEXT,__text) section :\n");
+			hexdump((void *)file.ptr + sections->offset);
+		}
 		sections = refresh_mysect(sections);
 		section = section + sizeof(struct section_64);
 		i++;
