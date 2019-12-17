@@ -6,19 +6,13 @@
 #    By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/20 21:33:19 by llacaze           #+#    #+#              #
-#    Updated: 2019/12/16 17:37:53 by llacaze          ###   ########.fr        #
+#    Updated: 2019/12/17 18:03:12 by llacaze          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = ft_nm
-
-INC_PATH = includes
-LIB_PATH = libft
-BUILD_PATH = objets
-
-LIB_SRCS = $(LIB_PATH)/libft.a
-
-OBJECTS = $(SOURCES:%.c=$(BUILD_PATH)/%.o)
+NAME = ft_nm_otool
+NAME1 = ft_nm
+NAME2 = ft_otool
 
 CC = gcc
 
@@ -37,24 +31,35 @@ SRC =	main.c \
 		corrupt64.c\
 		macho64_tools.c\
 		corrupt32.c\
-		macho32_tools.c
+		macho32_tools.c\
 
+SRC1 = $(SRC)
+SRC2 = $(SRC)
 
-OBJ = $(SRC:.c=.o)
+OBJ1 = $(SRC1:.c=.o)
+OBJ2 = $(SRC2:.c=.o)
 
-DIR_SRC = nm/sources
-DIR_OBJ = nm/objs
+DIR_SRC = sources
+DIR_OBJ = objs
 
-SRCS = $(addprefix $(DIR_SRC)/,$(SRC))
-OBJS = $(addprefix $(DIR_OBJ)/,$(OBJ))
+SRCS1 = ft_nm.c $(addprefix $(DIR_SRC)/,$(SRC1))
+SRCS2 = ft_otool.c $(addprefix $(DIR_SRC)/,$(SRC2))
+OBJS1 = ft_nm.o $(addprefix $(DIR_OBJ)/,$(OBJ1))
+OBJS2 = ft_otool.o $(addprefix $(DIR_OBJ)/,$(OBJ2))
 
 HEAD_DIR = ./libft/
 
 all:  $(NAME)
 
-$(NAME) : libft $(OBJS)
-		$(RM) $(NAME)
-		$(CC) $(CFLAGS) -o $@ $(OBJS) $(HEAD_DIR)/libft.a
+$(NAME): $(NAME1) $(NAME2)
+
+$(NAME1) : libft $(OBJS1)
+		$(RM) $(NAME1)
+		$(CC) $(CFLAGS) -o $@ $(OBJS1) $(HEAD_DIR)/libft.a
+
+$(NAME2) : libft $(OBJS2)
+		$(RM) $(NAME2)
+		$(CC) $(CFLAGS) -o $@ $(OBJS2) $(HEAD_DIR)/libft.a
 
 $(DIR_OBJ)/%.o: $(DIR_SRC)/%.c
 		@mkdir -p $(DIR_OBJ)
@@ -64,11 +69,11 @@ libft:
 		make -C $(HEAD_DIR)
 
 clean:
-		$(RM) $(OBJS)
+		$(RM) $(OBJS1) $(OBJS2)
 		cd $(HEAD_DIR) && $(MAKE) $@
 
 fclean: clean
-		$(RM) $(NAME)
+		$(RM) $(NAME1) $(NAME2)
 
 
 		make -C $(HEAD_DIR) fclean

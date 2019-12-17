@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/05 00:19:14 by llacaze           #+#    #+#             */
-/*   Updated: 2018/02/14 18:37:17 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/17 19:12:19 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ char			*ft_strjoin_free(char *s1, char *s2)
 	ft_memcpy(str, s1, i);
 	ft_memcpy(str + i, s2, j);
 	str[i + j] = '\0';
+	free(s1);
 	free(s2);
 	return (str);
 }

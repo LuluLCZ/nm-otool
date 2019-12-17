@@ -1,7 +1,5 @@
 
-feed_the_nm/audiodevice (for architecture ppc):
 
-feed_the_nm/audiodevice (for architecture i386):
 000033a6 t +[SSAudioDeviceCenter initialize]
 000031a4 t -[SSAudioDevice canBeDefaultDevice]
 0000321e t -[SSAudioDevice canBeDefaultSystemDevice]
