@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/16 20:56:49 by llacaze          ###   ########.fr       */
+/*   Updated: 2019/12/17 15:44:20 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,26 @@ void			print_address_hex(void *p0)
 		ft_putchar(hex_digit((p >> i) & 0xf));
 	}
 }
+
+void	ft_putnbr_base_otool(size_t n, size_t base, char *str)
+{
+	if (base == 10)
+		ft_putnbr(n);
+	else if (n < 0)
+		ft_putchar('0');
+	else
+	{
+		if (n <= 15)
+			str[ft_strlen(str)] = '0';
+		if (n >= base)
+			ft_putnbr_base(n / base, base, str);
+		if (n % base < 10)
+			str[ft_strlen(str)] = ((n % base) + 48);
+		else
+			str[ft_strlen(str)] = ((n % base) - 10 + 65);
+	}
+}
+
 
 int								check_bad_string(char *str, t_file file)
 {
@@ -80,15 +100,19 @@ struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data)
 void							hexdump(char *ptr)
 {
 	int							i;
+	char						*tmp;
 
+	tmp = ft_memalloc(256);
 	i = 0;
 	while (i < 16)
 	{
 		// print_address_hex(ptr);
-		printf("%02x ", (uint8_t)ptr[i]);
+		ft_putnbr_base_otool((uint8_t)ptr[i], 16, tmp);
+		tmp = ft_strjoin(tmp, " ");
 		// ft_putchar(' ');
 		i++;
 	}
+	ft_putstr(tmp);
 	ft_putchar('\n');
 }
 
