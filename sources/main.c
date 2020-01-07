@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 16:51:32 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/17 19:22:31 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/07 16:22:00 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,6 +225,7 @@ int init_env(char *filename, t_file file)
 	file.size = buf.st_size;
 	if ((file.ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 	{
+		free(file.filename);
 		perror("mmap");
 		return (EXIT_FAILURE);
 	}

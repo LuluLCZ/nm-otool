@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 17:22:59 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/17 18:06:12 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/07 16:20:36 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,5 +24,6 @@ int			main(int ac, char **av)
 		init_env(av[i], file);
 		i++;
 	}
+	free(file.bin);
 	return (0);
 }

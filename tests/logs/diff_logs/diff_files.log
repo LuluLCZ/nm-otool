@@ -1,1 +1,12 @@
-feed_the_nm/audiodevice
+../../nm-otool-test/binary/32_exe_hard
+../../nm-otool-test/binary/corr1
+../../nm-otool-test/binary/ds_store
+../../nm-otool-test/binary/hard_test_1
+../../nm-otool-test/binary/hello_je_diff
+../../nm-otool-test/binary/helloworldx64_samevalue1
+../../nm-otool-test/binary/ls_with_too_much_symbol
+../../nm-otool-test/binary/ls_zeroed_data_section_number
+../../nm-otool-test/binary/new
+../../nm-otool-test/binary/ppc_only
+../../nm-otool-test/binary/salam_i_like_cum
+../../nm-otool-test/binary/spec_binary64

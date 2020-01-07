@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/17 19:22:07 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/07 16:19:51 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,28 @@ void			print_address_hex(void *p0)
 		i -= 4;
 		ft_putchar(hex_digit((p >> i) & 0xf));
 	}
+}
+
+void			free_sections(t_mysects *sections)
+{
+	t_mysects *tmp;
+
+	sections = go_begin(sections);
+	while (sections)
+	{
+		if (sections->next)
+			tmp = sections->next;
+		free(sections->name);
+		if (sections->next)
+		{
+			free(sections);
+			sections = tmp;
+			tmp = NULL;
+		}
+		else
+			break ;
+	}
+	free(sections);
 }
 
 void	ft_putnbr_base_otool(size_t n, size_t base, char *str)
@@ -113,6 +135,7 @@ void							hexdump_64(char *ptr, int size)
 	}
 	tmp = ft_str_lowerchar(tmp);
 	ft_putendl(tmp);
+	free(tmp);
 }
 
 void							first_hexdump_64(int64_t size, void *start, int64_t sect_addr, t_file file)
@@ -126,14 +149,15 @@ void							first_hexdump_64(int64_t size, void *start, int64_t sect_addr, t_file
 	{
 		tmp = ft_memalloc(256 * 50);
 		ft_putnbr_base(sect_addr, 16, tmp);
-		ft_putstr(adding_0(tmp, 'T', 64, "none"));
+		tmp = adding_0(tmp, 'T', 64, "none");
+		ft_putstr(tmp);
 		ft_putchar('\t');
 		hexdump_64(start, len);
 		start += 16;
 		sect_addr += 16;
 		size = size - 16;
 		len = size > 16 ? 16 : size;
-		free(tmp);
+		free(tmp); 
 	}
 }
 
@@ -151,7 +175,10 @@ t_mysects						*parse_mach_64_segment(void *sc,\
 	{
 		if (error_64_1(i, ifswap64(((struct section_64 *)section)->size,\
 			file.reverse), 0, file) == -1)
-			return (NULL);
+			{
+				free_sections(sections);
+				return (NULL);
+			}
 		sections->address = ifswap64(((struct section_64 *)section)->addr, file.reverse);
 		sections->offset = ifswap64(((struct section_64 *)section)->offset, file.reverse);
 		sections->index = sections->prev ? sections->prev->index + 1 : 1;
@@ -163,6 +190,7 @@ t_mysects						*parse_mach_64_segment(void *sc,\
 			ft_putstr(file.filename);
 			ft_putstr(":\nContents of (__TEXT,__text) section\n");
 			first_hexdump_64(sections->size, (void *)file.ptr + sections->offset, sections->address, file);
+			free_sections(sections);
 			return (NULL);
 		}
 		sections = refresh_mysect(sections);
@@ -200,28 +228,6 @@ int								check_load_command_64(t_file file,\
 	return (0);
 }
 
-void			free_sections(t_mysects *sections)
-{
-	t_mysects *tmp;
-
-	sections = go_begin(sections);
-	while (sections)
-	{
-		if (sections->next)
-			tmp = sections->next;
-		free(sections->name);
-		if (sections->next)
-		{
-			free(sections);
-			sections = tmp;
-			tmp = NULL;
-		}
-		else
-			break ;
-	}
-	free(sections);
-}
-
 void			free_info(t_info *data)
 {
 	t_info *tmp;
@@ -255,25 +261,27 @@ int								handle_64(void *header, t_file file)
 	struct segment_command_64	*sc;
 	struct symtab_command		*sym;
 
-	sections = init_mysect();
 	ncmds = ifswap64(((struct mach_header_64 *)header)->ncmds, file.reverse);
 	i = 0;
 	lc = (void *)file.ptr + sizeof(struct mach_header_64);
-	data = init_mysymbol();
 	if (check_load_command_64(file, header, lc, ncmds) == -1)
 		return (-1);
+	sections = init_mysect();
+	data = init_mysymbol();
 	while (i < ncmds)
 	{
 		if (ifswap32(lc->cmd, file.reverse) == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
+			if (error_SYM(sym, file) == -1 || error_SYMOFF(sym, file, i) == -1)
+				break;
 			parse_mach_64_symtab(sym, file, sections, data);
 		}
 		else if (ifswap32(lc->cmd, file.reverse) == LC_SEGMENT_64)
 		{
 			sc = (struct segment_command_64 *)lc;
 			if ((sections = parse_mach_64_segment(sc, sections, file)) == NULL)
-				return (-1);
+				break;
 		}
 		lc = (void *) lc + ifswap32(lc->cmdsize, file.reverse);
 		i++;

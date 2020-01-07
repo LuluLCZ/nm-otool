@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/17 18:00:29 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/07 15:42:25 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,4 +122,6 @@ int						check_bad_string(char *str, t_file file);
 int						error_SYMOFF(struct symtab_command *sym, t_file file, uint32_t i);
 void					ft_putnbr_base_otool(size_t n, size_t base, char *str);
 int						init_env(char *filename, t_file file);
+void					free_sections(t_mysects *sections);
+void					free_info(t_info *data);
 

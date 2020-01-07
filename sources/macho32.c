@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 15:43:59 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/17 18:10:01 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/07 16:03:06 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void							first_hexdump(int64_t size, void *start, int64_t sect_addr, t_file fi
 	{
 		tmp = ft_memalloc(256 * 50);
 		ft_putnbr_base(sect_addr, 16, tmp);
-		ft_putstr(adding_0(tmp, 'T', 8, "none"));
+		ft_putstr((tmp = adding_0(tmp, 'T', 8, "none")));
 		ft_putchar('\t');
 		hexdump(start, len);
 		start += 16;
@@ -110,7 +110,10 @@ t_mysects	*parse_mach_32_segment(void *sc, t_mysects *sections, t_file file)
 	{
 		if (error_1(i, ifswap32(((struct section *)section)->size,\
 			file.reverse), 0, file) == -1)
-			return (NULL);
+			{
+				free_sections(sections);
+				return (NULL);
+			}
 		sections->address = ifswap32(((struct section *)section)->addr,\
 		file.reverse);
 		sections->offset = ifswap32(((struct section *)section)->offset, file.reverse);
@@ -123,6 +126,7 @@ t_mysects	*parse_mach_32_segment(void *sc, t_mysects *sections, t_file file)
 			ft_putstr(file.filename);
 			ft_putstr(":\nContents of (__TEXT,__text) section\n");
 			first_hexdump(sections->size, (void *)file.ptr + sections->offset, sections->address, file);
+			free_sections(sections);
 			return (NULL);
 		}
 		sections = refresh_mysect(sections);
@@ -170,30 +174,32 @@ int							handle_32(void *header, t_file file)
 	struct symtab_command		*sym;
 	struct segment_command	*sc;
 
-	sections = init_mysect();
 	ncmds = ifswap32(((struct mach_header *)header)->ncmds, file.reverse);
 	i = 0;
 	lc = (void *)file.ptr + sizeof(struct mach_header);
-	data = init_mysymbol();
 	if (check_load_command(file, header, lc, ncmds) == -1)
 		return (-1);
+	data = init_mysymbol();
+	sections = init_mysect();
 	while (i < ncmds)
 	{
 		if (ifswap32(lc->cmd, file.reverse) == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
 			if (error_SYM(sym, file) == -1 || error_SYMOFF(sym, file, i) == -1)
-				return (-1);
+				break;
 			parse_mach_32_symtab(sym, file, sections, data);
 		}
 		else if (ifswap32(lc->cmd, file.reverse) == LC_SEGMENT)
 		{
 			sc = (struct segment_command *)lc;
 			if ((sections = parse_mach_32_segment(sc, sections, file)) == NULL)
-				return (-1);
+				break;
 		}
 		lc = (void *)lc + ifswap32(lc->cmdsize, file.reverse);
 		i++;
 	}
+	free_info(data);
+	free_sections(sections);
 	return (0);
 }

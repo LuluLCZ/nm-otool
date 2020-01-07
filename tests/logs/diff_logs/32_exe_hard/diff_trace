@@ -1,0 +1,16 @@
+96a97
+> 0000e2b0 s ___block_descriptor_tmp
+99d99
+< 0000e2b0 s ___block_descriptor_tmp
+115d114
+< 0000e540 s ___block_descriptor_tmp65
+116a116
+> 0000e540 s ___block_descriptor_tmp65
+127d126
+< 0000a2c7 t ___copy_helper_block_
+129a129
+> 0000a2c7 t ___copy_helper_block_
+148d147
+< 0000a2f2 t ___destroy_helper_block_
+150a150
+> 0000a2f2 t ___destroy_helper_block_
