@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 22:30:57 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/17 19:42:47 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/07 12:07:56 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int		error_SYMOFF(struct symtab_command *sym, t_file file, uint32_t i)
 	(void)sym;
 	(void)file;
 	(void)i;
-	if (sym->symoff > file.size)
+	if ((sym->symoff > file.size))
 	{
 		ft_putstr_fd("/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm: ", 2);
 		ft_putstr_fd(file.filename, 2);
