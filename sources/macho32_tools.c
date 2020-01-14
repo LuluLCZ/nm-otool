@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 22:32:39 by llacaze           #+#    #+#             */
-/*   Updated: 2019/12/17 19:37:02 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/14 17:00:00 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int								handle_symtab(struct load_command *lc,\
 	if (ifswap32(lc->cmd, file.reverse) == LC_SYMTAB)
 	{
 		sym = (struct symtab_command *)lc;
-		if (error_SYM(sym, file) == -1)
+		if (error_sym(sym, file) == -1)
 			return (-1);
 		parse_mach_32_symtab(sym, file, sections, data);
 	}
@@ -69,11 +69,13 @@ char							*check_string(void *symtab,\
 	void						*strtab;
 
 	strtab = (void *)file.ptr + ifswap32(sym->stroff, file.reverse);
-	i = 0;
-	if ((check_bad_string(strtab + ifswap32(((struct nlist *)symtab)->n_un.n_strx, file.reverse), file)) == -1)
-		printf("fweewfijof");
+	i = check_bad_string(strtab + ifswap32(\
+		((struct nlist *)symtab)->n_un.n_strx, file.reverse), file);
 	if (i == -1)
+	{
+		printf("oewkfowefk\newokweofkewfok]nwoefwefijwefij\n");
 		return (ft_strdup("bad string index"));
+	}
 	else if (i != 0)
 		return (ft_strdup_size(strtab +\
 		ifswap32(((struct nlist *)symtab)->n_un.n_strx,\
@@ -94,6 +96,5 @@ int								overlaps_symtab_command(\
 			|| (sym->stroff + sym->strsize > symbol_table_size
 				&& sym->stroff < sym->symoff))
 		return (1);
-	else
-		return (0);
+	return (0);
 }

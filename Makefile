@@ -6,7 +6,7 @@
 #    By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/20 21:33:19 by llacaze           #+#    #+#              #
-#    Updated: 2020/01/07 14:40:00 by llacaze          ###   ########.fr        #
+#    Updated: 2020/01/14 15:55:43 by llacaze          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,14 +24,27 @@ RM = rm -Rfv
 
 SRC =	main.c \
 		init_list.c\
+		init_list_2.c\
+		init_list_3.c\
 		ft_swap_list.c\
 		macho64.c\
+		macho64_1.c\
+		macho64_2.c\
+		macho64_3.c\
 		macho32.c\
+		macho32_1.c\
+		macho32_2.c\
+		utils_1.c\
+		utils_2.c\
 		fat32.c\
+		fat_1.c\
+		fat_2.c\
 		corrupt64.c\
+		corrupt64_2.c\
 		macho64_tools.c\
 		corrupt32.c\
-		macho32_tools.c\
+		corrupt32_2.c\
+		macho32_tools.c
 
 SRC1 = $(SRC)
 SRC2 = $(SRC)

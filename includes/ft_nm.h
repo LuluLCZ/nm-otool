@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 18:37:55 by llacaze           #+#    #+#             */
-/*   Updated: 2020/01/07 15:42:25 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/14 16:01:28 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,20 +97,20 @@ uint64_t				ft_swap_int64(uint64_t x);
 uint64_t				ifswap64(uint64_t x, int reverse);
 uint32_t				ifswap32(uint32_t x, int reverse);
 int						error_64_1(uint32_t index, uint64_t size, int i, t_file file);
-int						error_64_2(uint32_t ncmds, t_file file, int i, uint32_t index, uint32_t cmdsize);
+int						error_64_2(uint32_t ncmds, t_file file, uint32_t index, uint32_t cmdsize);
 int						error_64_3(struct load_command *lc, t_file file, uint32_t index, void *header);
-int						error_64_SEG_1(struct segment_command_64 *sc, struct load_command *lc, uint32_t index, t_file file);
+int						error_64_seg_1(struct segment_command_64 *sc, uint32_t index, t_file file);
 int						overlaps_symtab_command64(struct symtab_command *sym);
-int						error_64_SYM(struct symtab_command *sym, t_file file);
+int						error_64_sym(struct symtab_command *sym, t_file file);
 int						handle_64_symtab(struct load_command *lc, t_info *data, t_file file, t_mysects *sections);
 void					print_64_data(t_info *data);
 char					*check_string_64(void *symtab, t_file file, struct symtab_command *sym);
 int						error_1(uint32_t index, uint64_t size, int i, t_file file);
-int						error_2(uint32_t ncmds, t_file file, int i, uint32_t index, uint32_t cmdsize);
+int						error_2(uint32_t ncmds, t_file file, uint32_t index, uint32_t cmdsize);
 int						error_3(struct load_command *lc, t_file file, uint32_t index, void *header);
-int						error_SEG_1(struct segment_command *sc, struct load_command *lc, uint32_t index, t_file file);
+int						error_seg_1(struct segment_command *sc, struct load_command *lc, uint32_t index, t_file file);
 int						overlaps_symtab_command(struct symtab_command *sym);
-int						error_SYM(struct symtab_command *sym, t_file file);
+int						error_sym(struct symtab_command *sym, t_file file);
 int						handle_symtab(struct load_command *lc, t_info *data, t_file file, t_mysects *sections);
 void					print_data(t_info *data);
 char					*check_string(void *symtab, t_file file, struct symtab_command *sym);
@@ -119,9 +119,20 @@ t_mysects				*parse_mach_32_segment(void *sc, t_mysects *sections, t_file file);
 void					parse_mach_64_symtab(struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data);
 void					parse_mach_32_symtab(struct symtab_command *sym, t_file file, t_mysects *sections, t_info *data);
 int						check_bad_string(char *str, t_file file);
-int						error_SYMOFF(struct symtab_command *sym, t_file file, uint32_t i);
+int						error_symoff(struct symtab_command *sym, t_file file, uint32_t i);
 void					ft_putnbr_base_otool(size_t n, size_t base, char *str);
 int						init_env(char *filename, t_file file);
 void					free_sections(t_mysects *sections);
 void					free_info(t_info *data);
+int						error_64_stroff(struct symtab_command *sym, t_file file, int index);
+char					*get_arch_type(int cputype, int cpusubtype);
+int						check_for_error_in_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_file file);
+int						check_for_host_arch(uint32_t nfat_arch, struct fat_arch *fat_arch, t_file file);
+uint64_t				ft_swap_int64_2(uint64_t x);
+uint64_t				ft_swap_int64_1(uint64_t x);
+int								check_load_command_64(t_file file, void *header, struct load_command *lc, uint32_t ncmds);
+void							first_hexdump_64(int64_t size, void *start, int64_t sect_addr, t_file file);
+t_mysects						*f_sect_64(struct section_64 *section, t_file file, t_mysects *sections);
+int								check_load_command(t_file file, void *header, struct load_command *lc, uint32_t ncmds);
+void							first_hexdump(int64_t size, void *start, int64_t sect_addr, t_file file);
 
