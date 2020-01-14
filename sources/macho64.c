@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 15:07:02 by llacaze           #+#    #+#             */
-/*   Updated: 2020/01/14 17:08:44 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/14 17:14:41 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ uint32_t i, t_mysects *sections, t_file file, struct load_command *lc)
 	data = init_mysymbol();
 	if (ifswap32(lc->cmd, file.reverse) == LC_SYMTAB)
 	{
-		printf("oefkwowkfwe\n");
 		sym = (struct symtab_command *)lc;
 		if (error_64_sym(sym, file) == -1 ||\
 		error_symoff(sym, file, i) == -1 || error_64_stroff(sym, file, i) == -1)

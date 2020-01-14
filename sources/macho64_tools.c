@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/13 21:45:23 by llacaze           #+#    #+#             */
-/*   Updated: 2020/01/14 17:05:16 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/14 17:15:21 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,8 @@ char							*check_string_64(void *symtab,\
 	strtab = (void *)file.ptr + ifswap32(sym->stroff, file.reverse);
 	i = check_bad_string(strtab + ifswap32(\
 		((struct nlist_64 *)symtab)->n_un.n_strx, file.reverse), file);
-	printf("oewkfowefk\newokweofkewfok]nwoefwefijwefij\n");
 	if (i == -1)
-	{
 		return (ft_strdup("bad string index"));
-	}
 	else if (i != 0)
 		return (ft_strdup_size(strtab +\
 		ifswap32(((struct nlist_64 *)symtab)->n_un.n_strx,\

@@ -6,7 +6,7 @@
 /*   By: llacaze <llacaze@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/14 15:52:55 by llacaze           #+#    #+#             */
-/*   Updated: 2020/01/14 15:53:03 by llacaze          ###   ########.fr       */
+/*   Updated: 2020/01/14 17:14:59 by llacaze          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,20 @@ char							hex_digit(int v)
 		return ('a' + v - 10);
 }
 
-void							print_address_hex(void *p0)
-{
-	int							i;
-	uintptr_t					p;
+// void							print_address_hex(void *p0)
+// {
+// 	int							i;
+// 	uintptr_t					p;
 
-	p = (uintptr_t)p0;
-	ft_putstr("0x");
-	i = (sizeof(p) << 2) - 4;
-	while (i >= 0)
-	{
-		i -= 4;
-		ft_putchar(hex_digit((p >> i) & 0xf));
-	}
-}
+// 	p = (uintptr_t)p0;
+// 	ft_putstr("0x");
+// 	i = (sizeof(p) << 2) - 4;
+// 	while (i >= 0)
+// 	{
+// 		i -= 4;
+// 		ft_putchar(hex_digit((p >> i) & 0xf));
+// 	}
+// }
 
 void							free_sections(t_mysects *sections)
 {
